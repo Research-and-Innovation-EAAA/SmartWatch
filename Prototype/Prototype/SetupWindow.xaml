@@ -1,0 +1,45 @@
+﻿<Window x:Class="Prototype1.SetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Prototype1"
+        mc:Ignorable="d"
+        Title="SetupWindow" Height="344.492" Width="253.601" ResizeMode="NoResize" Loaded="Window_Loaded">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="10">
+            <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Right" RenderTransformOrigin="0.5,0.5" Width="79" Height="29" Click="btnSave_Click" />
+        </DockPanel>
+
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="label1" Content="Frequency" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top"/>
+            <TextBox x:Name="tBoxFrequency"  HorizontalAlignment="Stretch" Height="23" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Frequency}" VerticalAlignment="Top" />
+
+            <Label x:Name="label2" Content="Period" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" />
+            <TextBox x:Name="tBoxPeriod"  HorizontalAlignment="Stretch" Height="23" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Period}" VerticalAlignment="Top"/>
+
+            <Separator Grid.Row="2" Grid.ColumnSpan="2" />
+
+            <Label x:Name="label3" Content="Study center" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="0" VerticalAlignment="Top"/>
+            <TextBox x:Name="tBoxSCenter"  HorizontalAlignment="Stretch" Height="23" Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=StudyCenter}" VerticalAlignment="Top"/>
+
+            <Label x:Name="label4" Content="Study code" HorizontalAlignment="Left" Grid.Row="4" Grid.Column="0" VerticalAlignment="Top"/>
+            <TextBox x:Name="tBoxSCode"  HorizontalAlignment="Stretch" Height="23" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=StudyCode}" VerticalAlignment="Top"/>
+
+            <Label x:Name="label5" Content=". . ." HorizontalAlignment="Center" Grid.Row="5" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
+        </Grid>
+    </DockPanel>
+
+</Window>
