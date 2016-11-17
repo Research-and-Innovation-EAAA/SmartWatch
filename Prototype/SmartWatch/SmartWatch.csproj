@@ -81,8 +81,10 @@
     <Compile Include="HowRYouConnector.cs" />
     <Compile Include="IDataConnector.cs" />
     <Compile Include="IDataReceiver.cs" />
+    <Compile Include="Interface1.cs" />
     <Compile Include="ListViewDeviceItem.cs" />
     <Compile Include="MyClasses.cs" />
+    <Compile Include="PatientService.cs" />
     <Compile Include="SetupWindow.xaml.cs">
       <DependentUpon>SetupWindow.xaml</DependentUpon>
     </Compile>

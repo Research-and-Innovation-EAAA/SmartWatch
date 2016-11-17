@@ -127,6 +127,18 @@ namespace IoTDataReceiver
 
         }
 
+        private void btnProcess_Click(object sender, RoutedEventArgs e)
+        {
+            if (listBoxWatches.SelectedItem == null) return;
+
+        }
+
+        private void btnUpload_Click(object sender, RoutedEventArgs e)
+        {
+            if (listBoxWatches.SelectedItem == null) return;
+
+        }
+
         // ---------------------------- SET WORKERS -------------------------------------
         List<BackgroundWorker> allBgWorkers2 = new List<BackgroundWorker>();
 

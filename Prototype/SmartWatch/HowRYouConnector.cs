@@ -12,17 +12,17 @@ namespace IoTDataReceiver
             return new HowRYouLoginToken();
         }
 
-        public void Logout(HowRYouLoginToken token)
+        public void Logout(string username, HowRYouLoginToken token)
         {
 
         }
 
-        public void UploadFile(string filePath, HowRYouLoginToken token)
+        public void UploadFile(string filePath, string username, HowRYouLoginToken token)
         {
 
         }
 
-        public void UploadViewData(string jsonData, string date, HowRYouLoginToken token)
+        public void UploadViewData(string jsonData, string date, string username, HowRYouLoginToken token)
         {
 
         }
