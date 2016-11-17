@@ -20,7 +20,7 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding Path=Device.SubjectInfo.SubjectCode}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding Path=PatientName}"/>
                     <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=BatteryLevel, Mode=OneWay}"/>
                     <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0" Height="5" Value="{Binding Path=BatteryLevel, Mode=OneWay}" Minimum="0" Maximum="100"/>
                 </Grid>
@@ -37,7 +37,7 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="{Binding Path=Name}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="{Binding Path=PatientName}"/>
                     <TextBlock Grid.Row="0" Grid.Column="1" Text="---"/>
                 </Grid>
             </Border>
@@ -48,7 +48,7 @@
         <Button x:Name="btnShowData" Content="Show data" HorizontalAlignment="Left" Margin="10,444,0,0" VerticalAlignment="Top" Width="200" Height="49" Click="btnShowData_Click"/>
         <ListBox x:Name="listBoxWatches" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" Height="429" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="listBoxWatches_SelectionChanged"/>
         <StackPanel x:Name="watchPanel" HorizontalAlignment="Left" Height="483" Margin="215,10,0,0" VerticalAlignment="Top" Width="636">
-            <Label x:Name="label" Content="{Binding Path=Device.SubjectInfo.SubjectCode}" Margin="0,70,0,0" FontSize="24" HorizontalAlignment="Center" />
+            <Label x:Name="label" Content="{Binding Path=PatientName}" Margin="0,70,0,0" FontSize="24" HorizontalAlignment="Center" />
 
             <Button x:Name="btnGet" Content="Get data" Width="250" Height="40" Margin="0,40,0,0" Click="btnGet_Click"/>
             <StackPanel HorizontalAlignment="Center" Height="50" Width="250" Orientation="Horizontal" Margin="0,20,0,0" >

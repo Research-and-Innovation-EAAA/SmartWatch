@@ -25,14 +25,16 @@ namespace IoTDataReceiver
     /// </summary>
     public partial class MainWindow : Window
     {
+        private IDataReceiver dataReceiver;
         public MainWindow()
         {
             InitializeComponent();
+            this.dataReceiver = new DataReceiver();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            listBoxWatches.ItemsSource = GeneActivDeviceService.GetInstance().ConnectedDevices;
+            listBoxWatches.ItemsSource = dataReceiver.GetConnectedDevices();
             
             listBoxWatches.ItemTemplateSelector = new WatchTemplateSelector();
         }
@@ -102,14 +104,15 @@ namespace IoTDataReceiver
         {
             if (listBoxWatches.SelectedItem == null) return;
 
-            IGeneaDevice watch = ((ListViewDeviceItem)listBoxWatches.SelectedItem).Device;
+            Guid watchId = ((ListViewDeviceItem)listBoxWatches.SelectedItem).DeviceId;
 
 
             /*((Watch)listBoxWatches.SelectedItem).Action = "Reading";
             ((Watch)listBoxWatches.SelectedItem).Name = ((Watch)listBoxWatches.SelectedItem).Name + "";*/
 
-            string resultFile = GeneActivDataConnector.GetInstance().DownloadData(watch);
-            Debug.Write("DONEE" + resultFile);
+            /*string resultFile =*/
+            dataReceiver.GetData(watchId);
+            Debug.Write("DONEE");
 
             /*BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += worker_DoWork;
@@ -169,7 +172,7 @@ namespace IoTDataReceiver
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             if (listBoxWatches.SelectedItem == null) return;
-            ((Watch)listBoxWatches.SelectedItem).Action = "Writing";
+            /*((Watch)listBoxWatches.SelectedItem).Action = "Writing";
             ((Watch)listBoxWatches.SelectedItem).Name = ((Watch)listBoxWatches.SelectedItem).Name + "";
 
             BackgroundWorker worker2 = new BackgroundWorker();
@@ -181,7 +184,7 @@ namespace IoTDataReceiver
             worker2.WorkerReportsProgress = true;
             worker2.RunWorkerAsync(listBoxWatches.SelectedItem);
 
-            allBgWorkers2.Add(worker2);
+            allBgWorkers2.Add(worker2);*/
         }
     }
 }

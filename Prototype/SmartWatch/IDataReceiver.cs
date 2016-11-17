@@ -1,4 +1,4 @@
-﻿using GeneActiv.GeneaLibrary;
+﻿using IoTDataReceiver;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,11 +8,16 @@ using System.Threading.Tasks;
 
 namespace IoTDataReceiver
 {
-    interface IDataConnector
+    interface IDataReceiver
     {
-        string DownloadData(Guid deviceId);
-        //TODO how to model a singleton? - cannot
+        void GetData(Guid deviceId);
+
+        void ProcessData();
+
+        void SendData();
 
         ObservableCollection<ListViewDeviceItem> GetConnectedDevices();
+
+        int getStatus();
     }
 }

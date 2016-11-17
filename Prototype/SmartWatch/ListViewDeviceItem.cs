@@ -13,29 +13,29 @@ namespace IoTDataReceiver
     /// <summary>
     /// Container for list view item representing a device plus app-specific state/control
     /// backing. Need INotifyPropertyChanged so we can update control from code-behind
-    /// Author: Genea 
+    /// Author: Activinsights Ltd. 
     /// </summary>
     public class ListViewDeviceItem : INotifyPropertyChanged
     {
         /// <summary>
         /// THE device - all settings, device I/O etc.
         /// </summary>
-        public IGeneaDevice Device
+        private Guid deviceId;
+        public Guid DeviceId
         {
-            get { return _device; }
-            set { _device = value; OnPropertyChanged("Device"); }
+            get { return deviceId; }
+            set { deviceId = value; OnPropertyChanged("DeviceId"); }
         }
-        private IGeneaDevice _device = null;
 
         /// <summary>
         /// Device battery level (%ge) from status updated
         /// </summary>
+        private int _batteryLevel = 0;
         public int BatteryLevel
         {
             get { Debug.Write("returning " +_batteryLevel + " %"); return _batteryLevel; }
         }
-        private int _batteryLevel = 0;
-
+        
         /// <summary>
         /// Set current battery level based on raw battery voltage
         /// </summary>
@@ -47,7 +47,12 @@ namespace IoTDataReceiver
             OnPropertyChanged("BatteryLevel");
         }
 
-
+        private string patientName;
+        public string PatientName
+        {
+            get { return patientName; }
+            set { patientName = value; OnPropertyChanged("PatientName"); }
+        }
 
         #region INotifyPropertyChanged
 
