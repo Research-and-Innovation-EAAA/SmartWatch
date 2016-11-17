@@ -15,9 +15,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static Prototype1.MyClasses;
+using GeneActiv.GeneaLibrary;
+using static IoTDataReceiver.MyClasses;
 
-namespace Prototype1
+namespace IoTDataReceiver
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -31,8 +32,8 @@ namespace Prototype1
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            listBoxWatches.ItemsSource = Service.Instance.Watches;
-
+            listBoxWatches.ItemsSource = GeneActivDeviceService.GetInstance().ConnectedDevices;
+            
             listBoxWatches.ItemTemplateSelector = new WatchTemplateSelector();
         }
 
@@ -100,10 +101,17 @@ namespace Prototype1
         private void btnGet_Click(object sender, RoutedEventArgs e)
         {
             if (listBoxWatches.SelectedItem == null) return;
-            ((Watch)listBoxWatches.SelectedItem).Action = "Reading";
-            ((Watch)listBoxWatches.SelectedItem).Name = ((Watch)listBoxWatches.SelectedItem).Name + "";
 
-            BackgroundWorker worker = new BackgroundWorker();
+            IGeneaDevice watch = ((ListViewDeviceItem)listBoxWatches.SelectedItem).Device;
+
+
+            /*((Watch)listBoxWatches.SelectedItem).Action = "Reading";
+            ((Watch)listBoxWatches.SelectedItem).Name = ((Watch)listBoxWatches.SelectedItem).Name + "";*/
+
+            string resultFile = GeneActivDataConnector.GetInstance().DownloadData(watch);
+            Debug.Write("DONEE" + resultFile);
+
+            /*BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += worker_DoWork;
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
@@ -112,7 +120,8 @@ namespace Prototype1
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(listBoxWatches.SelectedItem);
 
-            allBgWorkers.Add(worker);
+            allBgWorkers.Add(worker);*/
+
         }
 
         // ---------------------------- SET WORKERS -------------------------------------

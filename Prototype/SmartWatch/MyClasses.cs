@@ -10,9 +10,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using static Prototype1.MyClasses;
+using static IoTDataReceiver.MyClasses;
 
-namespace Prototype1
+namespace IoTDataReceiver
 {
     class MyClasses
     {
@@ -175,18 +175,18 @@ namespace Prototype1
         {
             public override DataTemplate SelectTemplate(object item, DependencyObject container)
             {
-                Watch watch = (Watch)item;
+                ListViewDeviceItem watch = ((ListViewDeviceItem)item);
 
                 Window window = Application.Current.MainWindow;
 
-                if (watch.Data > 0)
-                {
+             /*   if (watch.Data > 0)
+                {*/
                     return (DataTemplate)window.FindResource("FullDataTemplate");
-                }
+              /*  }
                 else
                 {
                     return (DataTemplate)window.FindResource("EmptyDataTemplate");
-                }
+                }*/
             }
         }
     }

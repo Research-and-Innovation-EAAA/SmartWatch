@@ -35,6 +35,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GeneActiv.DeviceIOLibrary">
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DeviceIOLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="GeneActiv.DotNetLibrary">
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DotNetLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="GeneActiv.GeneaLibrary">
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.GeneaLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="GeneActiv.WinUsbLibrary">
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.WinUsbLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="InTheHand.Net.Personal">
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\InTheHand.Net.Personal.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -58,6 +73,11 @@
     <Compile Include="DataWindow.xaml.cs">
       <DependentUpon>DataWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GeneActivDataConnector.cs" />
+    <Compile Include="GeneActivDeviceService.cs" />
+    <Compile Include="HowRYouConnector.cs" />
+    <Compile Include="IDataConnector.cs" />
+    <Compile Include="ListViewDeviceItem.cs" />
     <Compile Include="MyClasses.cs" />
     <Compile Include="SetupWindow.xaml.cs">
       <DependentUpon>SetupWindow.xaml</DependentUpon>

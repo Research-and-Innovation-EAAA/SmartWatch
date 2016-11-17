@@ -1,9 +1,9 @@
-﻿<Window x:Class="Prototype1.MainWindow"
+﻿<Window x:Class="IoTDataReceiver.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:l="clr-namespace:Prototype1"
+        xmlns:l="clr-namespace:IoTDataReceiver"
         mc:Ignorable="d"
         Title="Smart Watch" Height="534.432" Width="869.373" Loaded="Window_Loaded">
     <Window.Resources>
