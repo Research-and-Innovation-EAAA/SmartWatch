@@ -23,7 +23,7 @@ namespace IoTDataReceiver
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IProgressObserver
     {
         private IDataReceiver dataReceiver;
         public MainWindow()
@@ -35,7 +35,7 @@ namespace IoTDataReceiver
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             listBoxWatches.ItemsSource = dataReceiver.GetConnectedDevices();
-            
+
             listBoxWatches.ItemTemplateSelector = new WatchTemplateSelector();
         }
 
@@ -56,77 +56,63 @@ namespace IoTDataReceiver
             watchPanel.DataContext = listBoxWatches.SelectedItem;
         }
 
-        // ---------------------------- GET WORKERS -------------------------------------
-        List<BackgroundWorker> allBgWorkers = new List<BackgroundWorker>();
+        //     List<BackgroundWorker> allBgWorkers = new List<BackgroundWorker>();
 
-        void worker_DoWork(object sender, DoWorkEventArgs e)
+        // --------------------------------------- GET ---------------------------------------
+        private void btnGet_Click(object sender, RoutedEventArgs e)
         {
-            Watch w = (Watch)e.Argument;
-            BackgroundWorker worker = (BackgroundWorker)sender;
+            if (listBoxWatches.SelectedItem == null) return;
 
-            for (int n = 0; n < w.Data; n++)
-            {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
+            Guid deviceId = ((ListViewDeviceItem)listBoxWatches.SelectedItem).DeviceId;
 
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += workerGet_DoWork;
+            worker.ProgressChanged += workerGet_ProgressChanged;
+            worker.RunWorkerCompleted += workerGet_RunWorkerCompleted;
 
-                Thread.Sleep(1);
-                w.Progress = 1 + (int)(((double)n) / w.Data * 100.0);
-                worker.ReportProgress(1 + (int)(((double)n) / w.Data * 100.0));
-            }
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync(deviceId);
 
-            w.Action = "Done";
-            w.Data = 0;
-            w.Name = w.Name + "";
+            //            allBgWorkers.Add(worker);
+
         }
 
-        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+
+
+        void workerGet_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Guid deviceId = (Guid)e.Argument;
+
+            ((IProgressSubject)dataReceiver).RegisterObserver(this);
+            this.worker = (BackgroundWorker)sender;
+
+
+            dataReceiver.GetData(deviceId);
+            Debug.Write("DONE");
+
+            ((IProgressSubject)dataReceiver).UnregisterObserver(this);
+            this.worker = null;
+        }
+
+        void workerGet_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             int nr = e.ProgressPercentage;
             Debug.WriteLine(nr);
 
-            //progressBar.Value = nr;
+            progressBar.Value = nr;
         }
 
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        void workerGet_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             /*     if (e.Cancelled)
                      label.Content = label.Content + " - Cancelled";
                  else
                      label.Content = label.Content + " - Done";*/
-        }
-
-
-        private void btnGet_Click(object sender, RoutedEventArgs e)
-        {
-            if (listBoxWatches.SelectedItem == null) return;
-
-            Guid watchId = ((ListViewDeviceItem)listBoxWatches.SelectedItem).DeviceId;
-
-
-            /*((Watch)listBoxWatches.SelectedItem).Action = "Reading";
-            ((Watch)listBoxWatches.SelectedItem).Name = ((Watch)listBoxWatches.SelectedItem).Name + "";*/
-
-            /*string resultFile =*/
-            dataReceiver.GetData(watchId);
             Debug.Write("DONEE");
-
-            /*BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += worker_DoWork;
-            worker.ProgressChanged += worker_ProgressChanged;
-            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync(listBoxWatches.SelectedItem);
-
-            allBgWorkers.Add(worker);*/
-
         }
 
+        // --------------------------------------- PROCESS ---------------------------------------
         private void btnProcess_Click(object sender, RoutedEventArgs e)
         {
             if (listBoxWatches.SelectedItem == null) return;
@@ -134,6 +120,7 @@ namespace IoTDataReceiver
             dataReceiver.ProcessData();
         }
 
+        // --------------------------------------- UPLOAD ---------------------------------------
         private void btnUpload_Click(object sender, RoutedEventArgs e)
         {
             if (listBoxWatches.SelectedItem == null) return;
@@ -146,7 +133,7 @@ namespace IoTDataReceiver
 
         void worker2_DoWork(object sender, DoWorkEventArgs e)
         {
-            Watch w = (Watch)e.Argument;
+         /*   Watch w = (Watch)e.Argument;
             BackgroundWorker worker = (BackgroundWorker)sender;
 
             for (int n = 0; n < 7000; n++)
@@ -164,7 +151,7 @@ namespace IoTDataReceiver
             }
             w.Action = "Done";
             w.Data = 0;
-            w.Name = w.Name;
+            w.Name = w.Name;*/
         }
 
         void worker2_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -183,6 +170,7 @@ namespace IoTDataReceiver
                      label.Content = label.Content + " - Done";*/
         }
 
+        // --------------------------------------- CLEAR&SETUP ---------------------------------------
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             if (listBoxWatches.SelectedItem == null) return;
@@ -199,6 +187,13 @@ namespace IoTDataReceiver
             worker2.RunWorkerAsync(listBoxWatches.SelectedItem);
 
             allBgWorkers2.Add(worker2);*/
+        }
+
+        private BackgroundWorker worker = null;
+
+        public void Notify(int progress)
+        {
+            worker.ReportProgress(progress);
         }
     }
 }

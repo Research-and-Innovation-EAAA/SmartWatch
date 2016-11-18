@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
 namespace IoTDataReceiver
 {
-    class DataReceiver : IDataReceiver
+    class DataReceiver : IDataReceiver, IProgressSubject
     {
         IDataConnector dataConnector;
         IProcessAlgorithm algorithm;
@@ -93,6 +95,27 @@ namespace IoTDataReceiver
 
             status = 3;
             throw new NotImplementedException();
+        }
+
+        private List<IProgressObserver> observers = new List<IProgressObserver>();
+
+        public void RegisterObserver(IProgressObserver observer)
+        {
+            if (!this.observers.Contains(observer))
+                this.observers.Add(observer);
+        }
+
+        public void UnregisterObserver(IProgressObserver observer)
+        {
+            if (this.observers.Contains(observer))
+                this.observers.Remove(observer);
+        }
+
+        public void NotifyObservers(int progress)
+        {
+            Debug.WriteLine("Notifying observers: " + progress);
+            foreach (IProgressObserver o in this.observers)
+                o.Notify(progress);
         }
     }
 }

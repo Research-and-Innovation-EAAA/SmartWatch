@@ -19,5 +19,6 @@ namespace IoTDataReceiver
         ObservableCollection<ListViewDeviceItem> GetConnectedDevices();
 
         int getStatus();
+
     }
 }
