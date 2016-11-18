@@ -131,12 +131,14 @@ namespace IoTDataReceiver
         {
             if (listBoxWatches.SelectedItem == null) return;
 
+            dataReceiver.ProcessData();
         }
 
         private void btnUpload_Click(object sender, RoutedEventArgs e)
         {
             if (listBoxWatches.SelectedItem == null) return;
 
+            dataReceiver.SendData();
         }
 
         // ---------------------------- SET WORKERS -------------------------------------

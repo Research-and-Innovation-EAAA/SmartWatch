@@ -10,6 +10,13 @@ namespace IoTDataReceiver
 {
     interface IDataConnector
     {
+        /// <summary>
+        /// Method for downloading data from a device, returning a CSV file with records.
+        /// Req. CSV file must be in format username_yyyyMMddHHmmss.csv, where the date corresponds to the time of the start of measurement.
+        /// </summary>
+        /// <param name="deviceId">Identifier of the device to download data from</param>
+        /// <param name="path">Path to a folder where to create a temp/ with output file</param>
+        /// <returns>Path to cretef CSV file, beware of the naming requirement!</returns>
         string DownloadData(Guid deviceId, string path);
         //TODO how to model a singleton? - cannot
 

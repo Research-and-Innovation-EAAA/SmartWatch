@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IoTDataReceiver
 {
@@ -34,12 +31,17 @@ namespace IoTDataReceiver
         const string PATH = @"c:\SmartWatch\realtest\";
         private string pathCsv, pathZip;
         private string viewData;
+        private string username, date;
 
         public void GetData(Guid deviceId)
         {
             if (status != 0) return;
 
             this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
+
+            string[] info = Path.GetFileNameWithoutExtension(pathCsv).Split('_');
+            this.username = info[0];
+            this.date = info[1];
 
             status = 1;
         }
@@ -56,8 +58,22 @@ namespace IoTDataReceiver
         }
 
         private static string zipFile(string path) {
+
+            string startPath = @"c:\example\start";
+            string zipPath = @"c:\example\result.zip";
+          
+
+            ZipFile.CreateFromDirectory(startPath, zipPath);
+
+
+            string tempFolderPath = path + @"temp";
             string zipFilePath = path + @"data.zip";
-            ZipFile.CreateFromDirectory(path + @"temp\", zipFilePath);
+            if (!Directory.Exists(tempFolderPath))
+            {
+                throw new Exception("Cannot read the loaded file in temporary folder!");
+            }
+            ZipFile.CreateFromDirectory(tempFolderPath, zipFilePath); // TODO throwing errors all the time
+            //ZipFile.CreateFromDirectory(@"c:\SmartWatch\realtest\temp\", @"c:\SmartWatch\file.zip");
             return zipFilePath;
         }
 
@@ -65,12 +81,12 @@ namespace IoTDataReceiver
         {
             if (status != 2) return;
 
-            string password = patients.GetPassword("jkb"); // TODO username?!?!
-            var token = howRYou.Login("jkb", password);
+            string password = patients.GetPassword(this.username); 
+            var token = howRYou.Login(this.username, password);
 
             howRYou.UploadFile(this.pathZip, token);
 
-            howRYou.UploadViewData(this.viewData, "2016", token); // TODO DATE
+            howRYou.UploadViewData(this.viewData, this.date, token); 
 
             howRYou.Logout(token);
 

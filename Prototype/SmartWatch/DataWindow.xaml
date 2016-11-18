@@ -13,7 +13,7 @@
     <Grid>
         <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="comboBox_SelectionChanged"/>
         <GroupBox x:Name="groupBox" Header="Patient's data" HorizontalAlignment="Left" Margin="10,45,10,10" VerticalAlignment="Top" Height="187" Width="397">
-            <Label x:Name="label" Content="{Binding Path=Name, Converter={StaticResource converter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#00FFFF00" FontSize="36" Foreground="#FFBCE09E"/>
+            <Label x:Name="label" Content="{Binding Path=Name}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#00FFFF00" FontSize="36" Foreground="#FFBCE09E"/>
         </GroupBox>
     </Grid>
 </Window>
