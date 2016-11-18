@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using static IoTDataReceiver.MyClasses;
+using static Prototype.MyClasses;
 
-namespace IoTDataReceiver
+namespace Prototype
 {
     class MyClasses
     {
@@ -108,7 +104,7 @@ namespace IoTDataReceiver
 
         public class Settings
         {
-            public float Frequency { get; set; }
+            public int Frequency { get; set; }
             public int Period { get; set; }
 
             public string StudyCenter { get; set; }
@@ -117,6 +113,57 @@ namespace IoTDataReceiver
             public override string ToString()
             {
                 return Frequency + " " + Period + " " + StudyCenter + " " + StudyCode;
+            }
+        }
+
+        public class Service
+        {
+            private static Service service = null;
+
+            List<Watch> watches = new List<Watch>();
+            public List<Watch> Watches
+            {
+                get { return watches; }
+            }
+
+            public Watch FindWatch(string name)
+            {
+                foreach (Watch w in watches)
+                {
+                    if (w.Name == name)
+                        return w;
+                }
+                return null;
+            }
+
+            Settings settings;
+            public Settings Settings
+            {
+                get { return settings; }
+            }
+
+            private Service()
+            {
+                watches.Add(new Watch { Name = "Jakub", Data = 16345, Result = "Jakub sov godt." });
+                //watches.Add(new Watch { Name = "Lisa", Data = 22843, Result = "Lisa sov dejligt." });
+                watches.Add(new Watch { Name = "Søren", Data = 33400, Result = "Søren sov længe." });
+                //   watches.Add(new Watch { Name = "Monica", Data = 25400, Result = "Monica sov ikke." });
+                watches.Add(new Watch { Name = "Simon", Data = 0, Result = "No data." });
+
+                settings = new Settings { Frequency = 75, Period = 7, StudyCenter = "AUH", StudyCode = "Gigt" };
+            }
+
+
+
+            public static Service Instance
+            {
+                get
+                {
+                    if (service == null)
+                        service = new Service();
+
+                    return service;
+                }
             }
         }
 
@@ -140,7 +187,25 @@ namespace IoTDataReceiver
         }
     }
 
-   /* public class ProgressBarConverter : IValueConverter
+    public class ResultsConverter : IValueConverter
+    {
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string name = (string)value;
+            Watch w = Service.Instance.FindWatch(name);
+            if (w.Data == 0)
+                return w.Result;
+            return "No data loaded.";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ProgressBarConverter : IValueConverter
     {
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -158,5 +223,5 @@ namespace IoTDataReceiver
         {
             throw new NotImplementedException();
         }
-    }*/
+    }
 }

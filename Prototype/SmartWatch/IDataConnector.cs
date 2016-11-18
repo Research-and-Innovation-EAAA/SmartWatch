@@ -10,7 +10,7 @@ namespace IoTDataReceiver
 {
     interface IDataConnector
     {
-        string DownloadData(Guid deviceId);
+        string DownloadData(Guid deviceId, string path);
         //TODO how to model a singleton? - cannot
 
         ObservableCollection<ListViewDeviceItem> GetConnectedDevices();

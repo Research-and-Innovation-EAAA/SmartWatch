@@ -35,15 +35,15 @@ namespace IoTDataReceiver
             manager.StartLiveDeviceMonitor();
         }
 
-        public string DownloadData(Guid deviceId)
+        public string DownloadData(Guid deviceId, string path)
         {
-            const string PATH = @"c:\SmartWatch\test\";
+
             IGeneaDevice device = smartWatches[deviceId];
 
             // Determine whether the directory exists.
-            if (Directory.Exists(PATH))
+            if (Directory.Exists(path))
             {
-                System.IO.DirectoryInfo di = new DirectoryInfo(PATH);
+                System.IO.DirectoryInfo di = new DirectoryInfo(path);
 
                 foreach (FileInfo file in di.GetFiles())
                 {
@@ -56,11 +56,11 @@ namespace IoTDataReceiver
 
             }
 
-            Directory.CreateDirectory(PATH + "temp");
+            Directory.CreateDirectory(path + "temp");
 
             GeneaDateTime startTime = device.ReadData(1, 1)[0].DataHeader.PageTime;
             string startTimeUtc = startTime.ToDateTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo);
-            string fileName = PATH + @"temp\" + device.SubjectInfo.SubjectCode + "_" + startTime.ToDateTime().ToString("yyyyMMddHHmmss") + ".csv";
+            string fileName = path + @"temp\" + device.SubjectInfo.SubjectCode + "_" + startTime.ToDateTime().ToString("yyyyMMddHHmmss") + ".csv";
 
             using (var filer = new GeneaDeviceFiler(device, fileName))
             {

@@ -27,16 +27,16 @@ namespace IoTDataReceiver
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = Service.Instance.Settings;
+       //     this.DataContext = Service.Instance.Settings;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Is this ok?\n" + Service.Instance.Settings, "Ok?", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
+      //      MessageBoxResult result = MessageBox.Show("Is this ok?\n" + Service.Instance.Settings, "Ok?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+   //         if (result == MessageBoxResult.Yes)
+     //       {
                 this.Close();
-            }
+//}
         }
     }
 }

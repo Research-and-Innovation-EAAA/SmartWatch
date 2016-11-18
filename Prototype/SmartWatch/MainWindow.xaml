@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Smart Watch" Height="534.432" Width="869.373" Loaded="Window_Loaded">
     <Window.Resources>
-        <l:ProgressBarConverter x:Key="converter" />
+        <!--l:ProgressBarConverter x:Key="converter" /-->
 
         <DataTemplate x:Key="FullDataTemplate">
             <Border Margin="5" BorderThickness="0" Background="Transparent" Padding="10">

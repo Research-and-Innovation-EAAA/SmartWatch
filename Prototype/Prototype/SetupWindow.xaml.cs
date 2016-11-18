@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using static IoTDataReceiver.MyClasses;
+﻿using System.Windows;
+using static Prototype.MyClasses;
 
-namespace IoTDataReceiver
+namespace Prototype
 {
     /// <summary>
     /// Interaction logic for SetupWindow.xaml
@@ -27,7 +15,7 @@ namespace IoTDataReceiver
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = Service.Instance.Settings;
+            this.DataContext = MyClasses.Service.Instance.Settings;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)

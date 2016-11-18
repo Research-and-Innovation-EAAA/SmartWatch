@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static IoTDataReceiver.MyClasses;
+using static Prototype.MyClasses;
 
-namespace IoTDataReceiver
+namespace Prototype
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -85,7 +74,7 @@ namespace IoTDataReceiver
             int nr = e.ProgressPercentage;
             Debug.WriteLine(nr);
 
-            //progressBar.Value = nr;
+            progressBar.Value = nr;
         }
 
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -151,10 +140,10 @@ namespace IoTDataReceiver
 
         void worker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            /*     if (e.Cancelled)
+                 if (e.Cancelled)
                      label.Content = label.Content + " - Cancelled";
                  else
-                     label.Content = label.Content + " - Done";*/
+                     label.Content = label.Content + " - Done";
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)

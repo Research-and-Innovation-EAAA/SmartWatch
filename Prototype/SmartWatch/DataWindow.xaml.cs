@@ -32,7 +32,7 @@ namespace IoTDataReceiver
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            comboBox.ItemsSource = Service.Instance.Watches;
+         //   comboBox.ItemsSource = Service.Instance.Watches;
         }
     }
 }

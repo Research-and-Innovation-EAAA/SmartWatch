@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Patient's data" Height="273.305" Width="425.212" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Loaded="Window_Loaded">
     <Window.Resources>
-        <l:ResultsConverter x:Key="converter" />
+        <!--l:ResultsConverter x:Key="converter" /-->
     </Window.Resources>
 
     <Grid>
