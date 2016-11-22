@@ -39,6 +39,26 @@ namespace IoTDataReceiver
         {
             if (status != 0) return;
 
+            // Determine whether the directory exists
+            if (Directory.Exists(PATH))
+            {
+                System.IO.DirectoryInfo di = new DirectoryInfo(PATH);
+
+                foreach (FileInfo file in di.GetFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo dir in di.GetDirectories())
+                {
+                    dir.Delete(true);
+                }
+
+            }
+
+            // Try to create the directory
+            Directory.CreateDirectory(PATH + "temp");
+
+
             this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
 
             string[] info = Path.GetFileNameWithoutExtension(pathCsv).Split('_');
@@ -61,21 +81,14 @@ namespace IoTDataReceiver
 
         private static string zipFile(string path) {
 
-            string startPath = @"c:\example\start";
-            string zipPath = @"c:\example\result.zip";
-          
-
-            ZipFile.CreateFromDirectory(startPath, zipPath);
-
-
             string tempFolderPath = path + @"temp";
             string zipFilePath = path + @"data.zip";
             if (!Directory.Exists(tempFolderPath))
             {
                 throw new Exception("Cannot read the loaded file in temporary folder!");
             }
-            ZipFile.CreateFromDirectory(tempFolderPath, zipFilePath); // TODO throwing errors all the time
-            //ZipFile.CreateFromDirectory(@"c:\SmartWatch\realtest\temp\", @"c:\SmartWatch\file.zip");
+            ZipFile.CreateFromDirectory(tempFolderPath, zipFilePath);
+
             return zipFilePath;
         }
 
