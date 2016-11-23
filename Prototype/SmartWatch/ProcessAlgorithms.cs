@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace IoTDataReceiver
 {
+    delegate void ProgressUpdate(int percent);
     interface IProcessAlgorithm
     {
         /// <summary>
@@ -17,13 +18,17 @@ namespace IoTDataReceiver
         /// </summary>
         /// <param name="path">Path to a CSV file to process</param>
         /// <returns>JSON string with a timestamp and computed data values</returns>
-        string ProcessDataFromFile(string path);
+        string ProcessDataFromFile(string path, ProgressUpdate p);
     }
-
+    /// <summary>
+    /// Dummy algorithm that calculates average every 1000th record
+    /// </summary>
     class DummyAlgorithm : IProcessAlgorithm
     {
-        public string ProcessDataFromFile(string path)
+        public string ProcessDataFromFile(string path, ProgressUpdate p)
         {
+            int totalLines = this.CountLines(path);
+
             var reader = new StreamReader(File.OpenRead(path));
             List<DataClass> listData = new List<DataClass>();
 
@@ -89,7 +94,9 @@ namespace IoTDataReceiver
 
                 listData.Add(row2);
 
-                lineNumber = 0;
+                p((int)(((double)lineNumber)/ totalLines * 100f));
+
+//                lineNumber = 0;
                 avgActivity = 0;
                 avgTemperature = 0;
                 avgLight = 0;
@@ -109,6 +116,17 @@ namespace IoTDataReceiver
             Debug.WriteLine("Processed rows in total: " + listData.Count);
 
             return json;
+        }
+
+        private int CountLines(string path)
+        {
+            using (StreamReader r = new StreamReader(path))
+            {
+                int i = 0;
+                while (r.ReadLine() != null) 
+                    i++;
+                return i;
+            }
         }
 
         class DataClass

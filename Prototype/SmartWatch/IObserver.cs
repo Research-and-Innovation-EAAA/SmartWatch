@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,13 +9,34 @@ namespace IoTDataReceiver
 {
     interface IProgressObserver
     {
+        /// <summary>
+        /// Called by ProgressSubject, that the Observer is Registered to.
+        /// </summary>
+        /// <param name="progress">0-100%; -1 if indeterminate</param>
         void Notify(int progress);
     }
 
-    interface IProgressSubject
+    abstract class ProgressSubject
     {
-        void RegisterObserver(IProgressObserver observer);
-        void UnregisterObserver(IProgressObserver observer);
-        void NotifyObservers(int progress);
+        private List<IProgressObserver> observers = new List<IProgressObserver>();
+
+        public void RegisterObserver(IProgressObserver observer)
+        {
+            if (!this.observers.Contains(observer))
+                this.observers.Add(observer);
+        }
+
+        public void UnregisterObserver(IProgressObserver observer)
+        {
+            if (this.observers.Contains(observer))
+                this.observers.Remove(observer);
+        }
+
+        protected void NotifyObservers(int progress)
+        {
+            Debug.WriteLine("Notifying observers: " + progress);
+            foreach (IProgressObserver o in this.observers)
+                o.Notify(progress);
+        }
     }
 }

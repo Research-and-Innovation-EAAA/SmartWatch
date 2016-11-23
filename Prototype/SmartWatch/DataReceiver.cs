@@ -7,7 +7,7 @@ using System.IO.Compression;
 
 namespace IoTDataReceiver
 {
-    class DataReceiver : IDataReceiver, IProgressSubject
+    class DataReceiver : ProgressSubject, IDataReceiver, IProgressObserver
     {
         IDataConnector dataConnector;
         IProcessAlgorithm algorithm;
@@ -58,8 +58,9 @@ namespace IoTDataReceiver
             // Try to create the directory
             Directory.CreateDirectory(PATH + "temp");
 
-
+            ((ProgressSubject)dataConnector).RegisterObserver(this);
             this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
+            ((ProgressSubject)dataConnector).UnregisterObserver(this);
 
             string[] info = Path.GetFileNameWithoutExtension(pathCsv).Split('_');
             this.username = info[0];
@@ -72,11 +73,18 @@ namespace IoTDataReceiver
         {
             if (status != 1) return;
 
+            base.NotifyObservers(-1);
             this.pathZip = zipFile(PATH);
 
-            this.viewData = this.algorithm.ProcessDataFromFile(this.pathCsv);
+            this.viewData = this.algorithm.ProcessDataFromFile(this.pathCsv, test);
+            base.NotifyObservers(100); // to show we are done
 
             status = 2;
+        }
+
+        private void test(int progress) {
+            Debug.WriteLine("DELEGATE : " + progress);
+            base.NotifyObservers(progress);
         }
 
         private static string zipFile(string path) {
@@ -96,39 +104,30 @@ namespace IoTDataReceiver
         {
             if (status != 2) return;
 
+            base.NotifyObservers(-1);
+
             string password = patients.GetPassword(this.username); 
-            var token = howRYou.Login(this.username, password);
-
+   /*         var token = howRYou.Login(this.username, password);
             howRYou.UploadFile(this.pathZip, token);
-
             howRYou.UploadViewData(this.viewData, this.date, token); 
+            howRYou.Logout(token);*/
 
-            howRYou.Logout(token);
-
+            base.NotifyObservers(100); // to show we are done
 
             status = 3;
+        }
+
+        public void PrepareDevice()
+        {
+            //if (status != 3) return;
+
+            status = 4;
             throw new NotImplementedException();
         }
 
-        private List<IProgressObserver> observers = new List<IProgressObserver>();
-
-        public void RegisterObserver(IProgressObserver observer)
+        public void Notify(int progress)
         {
-            if (!this.observers.Contains(observer))
-                this.observers.Add(observer);
-        }
-
-        public void UnregisterObserver(IProgressObserver observer)
-        {
-            if (this.observers.Contains(observer))
-                this.observers.Remove(observer);
-        }
-
-        public void NotifyObservers(int progress)
-        {
-            Debug.WriteLine("Notifying observers: " + progress);
-            foreach (IProgressObserver o in this.observers)
-                o.Notify(progress);
+            base.NotifyObservers(progress);
         }
     }
 }

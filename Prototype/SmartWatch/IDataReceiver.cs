@@ -8,13 +8,15 @@ using System.Threading.Tasks;
 
 namespace IoTDataReceiver
 {
-    interface IDataReceiver
+    public interface IDataReceiver
     {
         void GetData(Guid deviceId);
 
         void ProcessData();
 
         void SendData();
+
+        void PrepareDevice();
 
         ObservableCollection<ListViewDeviceItem> GetConnectedDevices();
 

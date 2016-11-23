@@ -14,7 +14,7 @@ using System.Windows.Threading;
 
 namespace IoTDataReceiver
 {
-    class GeneActivDataConnector : IDataConnector
+    class GeneActivDataConnector : ProgressSubject, IDataConnector
     {
 
         public GeneActivDataConnector()
@@ -67,14 +67,20 @@ namespace IoTDataReceiver
                 filer.ExtractOperatorID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
                 filer.ExtractNotes = "Downloaded by IoTDataReceiver";
 
-                //        filer.WriteDataProgress += _OnExtractProgress; TODO progressbar
+                filer.WriteDataProgress += this.OnExtractProgress; 
                 filer.CreateFile();
                 filer.WriteStoredData();
                 filer.CloseFile();
-                //      filer.WriteDataProgress -= _OnExtractProgress; 
+                filer.WriteDataProgress -= this.OnExtractProgress;
 
                 return fileName;
             }
+        }
+
+        private void OnExtractProgress(object sender, GeneaDeviceFilerProgressEventArgs e)
+        {
+            int progress = (int)(100 * ((double)e.NumOfDataBlocks / (double)e.TotalDataBlocks));
+            base.NotifyObservers(progress);
         }
 
         private GeneaDeviceManager manager = new GeneaDeviceManager();
@@ -109,7 +115,7 @@ namespace IoTDataReceiver
         {
             // New entry for list control data source with default streaming options
 
-            runOnMain(() => { devices.Add(new ListViewDeviceItem { DeviceId = device.GeneaDeviceID, PatientName=device.SubjectInfo.SubjectCode }); });
+            runOnMain(() => { devices.Add(new ListViewDeviceItem { DeviceId = device.GeneaDeviceID, PatientName = device.SubjectInfo.SubjectCode }); });
 
             device.StatusUpdate += OnLiveDeviceStatusUpdate;
             device.DeviceSetupUpdate += OnLiveDeviceSetupUpdate;
@@ -165,6 +171,7 @@ namespace IoTDataReceiver
         {
             //TODO update listview  Dispatcher.BeginInvoke(new Action(() => CollectionViewSource.GetDefaultView(Devices).Refresh()));
         }
+
 
     }
 }

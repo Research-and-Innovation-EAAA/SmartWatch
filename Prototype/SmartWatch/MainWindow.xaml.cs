@@ -41,7 +41,7 @@ namespace IoTDataReceiver
 
         private void btnSet_Click(object sender, RoutedEventArgs e)
         {
-            SetupWindow w = new SetupWindow();
+            SetupWindow w = new SetupWindow(dataReceiver);
             w.ShowDialog();
         }
 
@@ -70,7 +70,7 @@ namespace IoTDataReceiver
             worker.ProgressChanged += workerGet_ProgressChanged;
             worker.RunWorkerCompleted += workerGet_RunWorkerCompleted;
 
-            worker.WorkerSupportsCancellation = true;
+            worker.WorkerSupportsCancellation = false; // TODO cancel???
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(deviceId);
 
@@ -84,14 +84,13 @@ namespace IoTDataReceiver
         {
             Guid deviceId = (Guid)e.Argument;
 
-            ((IProgressSubject)dataReceiver).RegisterObserver(this);
+            ((ProgressSubject)dataReceiver).RegisterObserver(this);
             this.worker = (BackgroundWorker)sender;
-
 
             dataReceiver.GetData(deviceId);
             Debug.Write("DONE");
 
-            ((IProgressSubject)dataReceiver).UnregisterObserver(this);
+            ((ProgressSubject)dataReceiver).UnregisterObserver(this);
             this.worker = null;
         }
 
@@ -99,7 +98,7 @@ namespace IoTDataReceiver
         {
             int nr = e.ProgressPercentage;
             Debug.WriteLine(nr);
-
+            progressBar.IsIndeterminate = nr == -1;
             progressBar.Value = nr;
         }
 
@@ -117,7 +116,41 @@ namespace IoTDataReceiver
         {
             if (listBoxWatches.SelectedItem == null) return;
 
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += workerProcess_DoWork;
+            worker.ProgressChanged += workerProcess_ProgressChanged;
+            worker.RunWorkerCompleted += workerProcess_RunWorkerCompleted;
+
+            worker.WorkerSupportsCancellation = false; // TODO cancel???
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync();
+        }
+
+        void workerProcess_DoWork(object sender, DoWorkEventArgs e)
+        {
+         //   Guid deviceId = (Guid)e.Argument;
+
+            ((ProgressSubject)dataReceiver).RegisterObserver(this);
+            this.worker = (BackgroundWorker)sender;
+
             dataReceiver.ProcessData();
+            Debug.Write("DONE");
+
+            ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+            this.worker = null;
+        }
+
+        void workerProcess_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            int nr = e.ProgressPercentage;
+            Debug.WriteLine(nr);
+            progressBar.IsIndeterminate = nr == -1;
+            progressBar.Value = nr;
+        }
+
+        void workerProcess_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Debug.Write("DONEE");
         }
 
         // --------------------------------------- UPLOAD ---------------------------------------
@@ -125,69 +158,94 @@ namespace IoTDataReceiver
         {
             if (listBoxWatches.SelectedItem == null) return;
 
-            dataReceiver.SendData();
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += workerSend_DoWork;
+            worker.ProgressChanged += workerSend_ProgressChanged;
+            worker.RunWorkerCompleted += workerSend_RunWorkerCompleted;
+
+            worker.WorkerSupportsCancellation = false; // TODO cancel???
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync();
         }
 
-        // ---------------------------- SET WORKERS -------------------------------------
-        List<BackgroundWorker> allBgWorkers2 = new List<BackgroundWorker>();
 
-        void worker2_DoWork(object sender, DoWorkEventArgs e)
+        void workerSend_DoWork(object sender, DoWorkEventArgs e)
         {
-         /*   Watch w = (Watch)e.Argument;
-            BackgroundWorker worker = (BackgroundWorker)sender;
+            //   Guid deviceId = (Guid)e.Argument;
 
-            for (int n = 0; n < 7000; n++)
-            {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
+            ((ProgressSubject)dataReceiver).RegisterObserver(this);
+            this.worker = (BackgroundWorker)sender;
 
+            dataReceiver.SendData();
+            Debug.Write("DONE");
 
-                Thread.Sleep(1);
-                w.Progress = 1 + (int)(((double)n) / 7000 * 100.0);
-                worker.ReportProgress(1 + (int)(((double)n) / 7000 * 100.0));
-            }
-            w.Action = "Done";
-            w.Data = 0;
-            w.Name = w.Name;*/
+            ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+            this.worker = null;
         }
 
-        void worker2_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        void workerSend_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             int nr = e.ProgressPercentage;
             Debug.WriteLine(nr);
-
-            //progressBar.Value = nr;
+            progressBar.IsIndeterminate = nr == -1;
+            progressBar.Value = nr;
         }
 
-        void worker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        void workerSend_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            /*     if (e.Cancelled)
-                     label.Content = label.Content + " - Cancelled";
-                 else
-                     label.Content = label.Content + " - Done";*/
+            Debug.Write("DONEE");
         }
 
         // --------------------------------------- CLEAR&SETUP ---------------------------------------
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             if (listBoxWatches.SelectedItem == null) return;
-            /*((Watch)listBoxWatches.SelectedItem).Action = "Writing";
-            ((Watch)listBoxWatches.SelectedItem).Name = ((Watch)listBoxWatches.SelectedItem).Name + "";
 
-            BackgroundWorker worker2 = new BackgroundWorker();
-            worker2.DoWork += worker2_DoWork;
-            worker2.ProgressChanged += worker2_ProgressChanged;
-            worker2.RunWorkerCompleted += worker2_RunWorkerCompleted;
 
-            worker2.WorkerSupportsCancellation = true;
-            worker2.WorkerReportsProgress = true;
-            worker2.RunWorkerAsync(listBoxWatches.SelectedItem);
+            SetupWindow w = new SetupWindow(dataReceiver);
+            w.Owner = this;
+            w.ShowDialog();
 
-            allBgWorkers2.Add(worker2);*/
+
+
+        /*    BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += workerSet_DoWork;
+            worker.ProgressChanged += workerSet_ProgressChanged;
+            worker.RunWorkerCompleted += workerSet_RunWorkerCompleted;
+
+            worker.WorkerSupportsCancellation = false; // TODO cancel???
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync();*/
+
         }
+
+        void workerSet_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //   Guid deviceId = (Guid)e.Argument;
+
+            ((ProgressSubject)dataReceiver).RegisterObserver(this);
+            this.worker = (BackgroundWorker)sender;
+
+            dataReceiver.SendData();
+            Debug.Write("DONE");
+
+            ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+            this.worker = null;
+        }
+
+        void workerSet_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            int nr = e.ProgressPercentage;
+            Debug.WriteLine(nr);
+            progressBar.IsIndeterminate = nr == -1;
+            progressBar.Value = nr;
+        }
+
+        void workerSet_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Debug.Write("DONEE");
+        }
+
 
         private BackgroundWorker worker = null;
 

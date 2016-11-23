@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IoTDataReceiver"
         mc:Ignorable="d"
-        Title="SetupWindow" Height="344.492" Width="253.601" ResizeMode="NoResize" Loaded="Window_Loaded">
+        Title="Erase &amp; Setup" Height="344.492" Width="322.165" ResizeMode="NoResize" Loaded="Window_Loaded">
     <DockPanel>
         <DockPanel DockPanel.Dock="Bottom" Margin="10">
-            <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Right" RenderTransformOrigin="0.5,0.5" Width="79" Height="29" Click="btnSave_Click" />
+            <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" Width="79" Height="29" Click="btnCancel_Click" />
+            <Button x:Name="btnOk" Content="Erase &amp; Setup" HorizontalAlignment="Right" RenderTransformOrigin="0.5,0.5" Width="90" Height="29" Click="btnOk_Click" />
         </DockPanel>
 
         <Grid Margin="10">
@@ -19,26 +20,37 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Label x:Name="label1" Content="Frequency" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top"/>
-            <TextBox x:Name="tBoxFrequency"  HorizontalAlignment="Stretch" Height="23" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Frequency}" VerticalAlignment="Top" />
+            <Label x:Name="label0" Content="Patient's username" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top"/>
+            <TextBox x:Name="tBoxUsername"  HorizontalAlignment="Stretch" Height="23" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Username}" VerticalAlignment="Top" />
+            
+            <Separator Grid.Row="1" Grid.ColumnSpan="2" />
+            
+            <Label x:Name="label1" Content="Frequency" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" VerticalAlignment="Top"/>
+            <TextBox x:Name="tBoxFrequency"  HorizontalAlignment="Stretch" Height="23" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Frequency}" VerticalAlignment="Top" />
 
-            <Label x:Name="label2" Content="Period" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" />
-            <TextBox x:Name="tBoxPeriod"  HorizontalAlignment="Stretch" Height="23" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Period}" VerticalAlignment="Top"/>
+            <Label x:Name="label2" Content="Period" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="0" VerticalAlignment="Top" />
+           <!-- <StackPanel Height="23" Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
+                <Label x:Name="label2_1" Content="days" />
+                <Label x:Name="label2_2" Content="hours" />
+            </StackPanel> -->
+            <TextBox x:Name="tBoxPeriod"  HorizontalAlignment="Stretch" Height="23" Grid.Row="3" Grid.Column="2" TextWrapping="Wrap" Text="{Binding Path=Period}" VerticalAlignment="Top"/>
 
-            <Separator Grid.Row="2" Grid.ColumnSpan="2" />
+            <Separator Grid.Row="4" Grid.ColumnSpan="2" />
 
-            <Label x:Name="label3" Content="Study center" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="0" VerticalAlignment="Top"/>
-            <TextBox x:Name="tBoxSCenter"  HorizontalAlignment="Stretch" Height="23" Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=StudyCenter}" VerticalAlignment="Top"/>
+            <Label x:Name="label3" Content="Study center" HorizontalAlignment="Left" Grid.Row="5" Grid.Column="0" VerticalAlignment="Top"/>
+            <TextBox x:Name="tBoxSCenter"  HorizontalAlignment="Stretch" Height="23" Grid.Row="5" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=StudyCenter}" VerticalAlignment="Top"/>
 
-            <Label x:Name="label4" Content="Study code" HorizontalAlignment="Left" Grid.Row="4" Grid.Column="0" VerticalAlignment="Top"/>
-            <TextBox x:Name="tBoxSCode"  HorizontalAlignment="Stretch" Height="23" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=StudyCode}" VerticalAlignment="Top"/>
+            <Label x:Name="label4" Content="Study code" HorizontalAlignment="Left" Grid.Row="6" Grid.Column="0" VerticalAlignment="Top"/>
+            <TextBox x:Name="tBoxSCode"  HorizontalAlignment="Stretch" Height="23" Grid.Row="6" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=StudyCode}" VerticalAlignment="Top"/>
 
-            <Label x:Name="label5" Content=". . ." HorizontalAlignment="Center" Grid.Row="5" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
+            <Label x:Name="label5" Content=":-)" HorizontalAlignment="Center" Grid.Row="7" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
         </Grid>
     </DockPanel>
 

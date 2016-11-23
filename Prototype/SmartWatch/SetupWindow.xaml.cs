@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
@@ -20,23 +8,37 @@ namespace IoTDataReceiver
     /// </summary>
     public partial class SetupWindow : Window
     {
-        public SetupWindow()
+        private IDataReceiver dataReceiver;
+        private Settings settings;
+
+        public SetupWindow(IDataReceiver dataReceiver)
         {
             InitializeComponent();
+            this.dataReceiver = dataReceiver;
+            this.settings = SettingsService.Instance.Settings;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-       //     this.DataContext = Service.Instance.Settings;
+            this.DataContext = this.settings;
+            this.tBoxUsername.DataContext = this;
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        public string Username { get; set; }
+
+        private void btnOk_Click(object sender, RoutedEventArgs e)
         {
-      //      MessageBoxResult result = MessageBox.Show("Is this ok?\n" + Service.Instance.Settings, "Ok?", MessageBoxButton.YesNo, MessageBoxImage.Question);
-   //         if (result == MessageBoxResult.Yes)
-     //       {
+            MessageBoxResult result = MessageBox.Show("Is this ok?\n" + SettingsService.Instance.Settings+"\nUsername: " + Username, "Ok?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                SettingsService.Instance.Settings = this.settings; // TODO cancel + saving 
                 this.Close();
-//}
+            }
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
