@@ -96,6 +96,7 @@
     <Compile Include="IDataConnector.cs" />
     <Compile Include="IDataReceiver.cs" />
     <Compile Include="IObserver.cs" />
+    <Compile Include="MyExceptions.cs" />
     <Compile Include="ProcessAlgorithms.cs" />
     <Compile Include="ListViewDeviceItem.cs" />
     <Compile Include="MyClasses.cs" />

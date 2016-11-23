@@ -72,15 +72,22 @@ namespace IoTDataReceiver
             {
                 dataReceiver.GetData(deviceId);
             }
-            catch (ArgumentException ex)
+            catch (MyExceptions.NoDataException ex)
             {
-                // no data
                 MessageBox.Show("This smart watch does not contain any data.\n"+ex.Message);
+            }
+            catch (MyExceptions.CommunicationException ex)
+            {
+                MessageBox.Show("Error reading data.\n" + ex.Message);
+            }
+            finally
+            {
+                ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+                this.worker = null;
             }
             Debug.Write("DONE");
 
-            ((ProgressSubject)dataReceiver).UnregisterObserver(this);
-            this.worker = null;
+            
         }
 
         void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)

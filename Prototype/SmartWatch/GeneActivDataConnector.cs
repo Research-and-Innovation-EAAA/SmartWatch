@@ -57,7 +57,16 @@ namespace IoTDataReceiver
             }
 
             Directory.CreateDirectory(path + "temp");
-            GeneaDateTime startTime = device.ReadData(1, 1)[0].DataHeader.PageTime;
+
+            GeneaDateTime startTime = null;
+            try
+            {
+                startTime = device.ReadData(1, 1)[0].DataHeader.PageTime;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new MyExceptions.NoDataException();
+            }
 
             string startTimeUtc = startTime.ToDateTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo);
             string fileName = path + @"temp\" + device.SubjectInfo.SubjectCode + "_" + startTime.ToDateTime().ToString("yyyyMMddHHmmss") + ".csv";
@@ -69,7 +78,9 @@ namespace IoTDataReceiver
 
                 filer.WriteDataProgress += this.OnExtractProgress;
                 filer.CreateFile();
-                filer.WriteStoredData();
+                
+                    filer.WriteStoredData(); // debug exception communivation error, catch
+                
                 filer.CloseFile();
                 filer.WriteDataProgress -= this.OnExtractProgress;
 

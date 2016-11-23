@@ -71,19 +71,8 @@ namespace IoTDataReceiver
             Directory.CreateDirectory(PATH + "temp");
 
             ((ProgressSubject)dataConnector).RegisterObserver(this);
-            try
-            {
-                this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
-            }
-            catch (Exception ex)
-            {
-                // no data
-                Debug.Write(ex);
-            }
-            finally
-            {
-                ((ProgressSubject)dataConnector).UnregisterObserver(this);
-            }
+            this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
+            ((ProgressSubject)dataConnector).UnregisterObserver(this);
 
 
 
