@@ -14,10 +14,22 @@ namespace IoTDataReceiver
         PatientService patients;
         HowRYouConnector howRYou;
 
-        public DataReceiver() {
+        private static DataReceiver instance = null;
+        public static DataReceiver Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new DataReceiver();
+                return instance;
+            }
+        }
+
+        private DataReceiver()
+        {
             this.dataConnector = new GeneActivDataConnector();
             this.algorithm = new DummyAlgorithm();
-            this.patients = new PatientService();
+            this.patients = PatientService.Instance;
             this.howRYou = HowRYouConnector.Instance;
             this.status = 0;
         }
@@ -28,7 +40,7 @@ namespace IoTDataReceiver
         }
 
         private int status; // 0 not, 1 loaded, 2 processed, 3 sent
-        public int getStatus() { return this.status; }
+        public int GetStatus() { return this.status; }
 
         const string PATH = @"c:\SmartWatch\realtest\";
         private string pathCsv, pathZip;
@@ -59,8 +71,21 @@ namespace IoTDataReceiver
             Directory.CreateDirectory(PATH + "temp");
 
             ((ProgressSubject)dataConnector).RegisterObserver(this);
-            this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
-            ((ProgressSubject)dataConnector).UnregisterObserver(this);
+            try
+            {
+                this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
+            }
+            catch (Exception ex)
+            {
+                // no data
+                Debug.Write(ex);
+            }
+            finally
+            {
+                ((ProgressSubject)dataConnector).UnregisterObserver(this);
+            }
+
+
 
             string[] info = Path.GetFileNameWithoutExtension(pathCsv).Split('_');
             this.username = info[0];
@@ -82,12 +107,14 @@ namespace IoTDataReceiver
             status = 2;
         }
 
-        private void test(int progress) {
+        private void test(int progress)
+        {
             Debug.WriteLine("DELEGATE : " + progress);
             base.NotifyObservers(progress);
         }
 
-        private static string zipFile(string path) {
+        private static string zipFile(string path)
+        {
 
             string tempFolderPath = path + @"temp";
             string zipFilePath = path + @"data.zip";
@@ -106,23 +133,28 @@ namespace IoTDataReceiver
 
             base.NotifyObservers(-1);
 
-            string password = patients.GetPassword(this.username); 
-   /*         var token = howRYou.Login(this.username, password);
-            howRYou.UploadFile(this.pathZip, token);
-            howRYou.UploadViewData(this.viewData, this.date, token); 
-            howRYou.Logout(token);*/
+            string password = patients.GetPassword(this.username);
+            /*         var token = howRYou.Login(this.username, password);
+                     howRYou.UploadFile(this.pathZip, token);
+                     howRYou.UploadViewData(this.viewData, this.date, token); 
+                     howRYou.Logout(token);*/
 
             base.NotifyObservers(100); // to show we are done
 
             status = 3;
         }
 
-        public void PrepareDevice()
+        public void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings)
         {
             //if (status != 3) return;
 
+            base.NotifyObservers(-1);
+
+            dataConnector.SetupDevice(deviceId, username, settings);
+
+            base.NotifyObservers(100); // to show we are done
+
             status = 4;
-            throw new NotImplementedException();
         }
 
         public void Notify(int progress)

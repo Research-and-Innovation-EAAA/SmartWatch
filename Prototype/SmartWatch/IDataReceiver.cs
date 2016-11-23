@@ -16,11 +16,11 @@ namespace IoTDataReceiver
 
         void SendData();
 
-        void PrepareDevice();
+        void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings);
 
         ObservableCollection<ListViewDeviceItem> GetConnectedDevices();
 
-        int getStatus();
+        int GetStatus();
 
     }
 }

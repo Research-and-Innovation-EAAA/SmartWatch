@@ -3,10 +3,10 @@ using System.Windows.Controls;
 
 namespace IoTDataReceiver
 {
-    class MyClasses
+    public class MyClasses
     {
 
-        public struct Settings
+    /*    public struct Settings
         {
             public float Frequency { get; set; }
             public int Period { get; set; }
@@ -19,7 +19,7 @@ namespace IoTDataReceiver
                 return Frequency + " " + Period + " " + StudyCenter + " " + StudyCode;
             }
         }
-
+        */
 
         public class WatchTemplateSelector : DataTemplateSelector
         {

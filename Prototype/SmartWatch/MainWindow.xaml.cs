@@ -1,21 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GeneActiv.GeneaLibrary;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
@@ -29,7 +16,7 @@ namespace IoTDataReceiver
         public MainWindow()
         {
             InitializeComponent();
-            this.dataReceiver = new DataReceiver();
+            this.dataReceiver = DataReceiver.Instance;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -56,8 +43,6 @@ namespace IoTDataReceiver
             watchPanel.DataContext = listBoxWatches.SelectedItem;
         }
 
-        //     List<BackgroundWorker> allBgWorkers = new List<BackgroundWorker>();
-
         // --------------------------------------- GET ---------------------------------------
         private void btnGet_Click(object sender, RoutedEventArgs e)
         {
@@ -67,17 +52,13 @@ namespace IoTDataReceiver
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerGet_DoWork;
-            worker.ProgressChanged += workerGet_ProgressChanged;
+            worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerGet_RunWorkerCompleted;
 
             worker.WorkerSupportsCancellation = false; // TODO cancel???
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(deviceId);
-
-            //            allBgWorkers.Add(worker);
-
         }
-
 
 
         void workerGet_DoWork(object sender, DoWorkEventArgs e)
@@ -87,14 +68,22 @@ namespace IoTDataReceiver
             ((ProgressSubject)dataReceiver).RegisterObserver(this);
             this.worker = (BackgroundWorker)sender;
 
-            dataReceiver.GetData(deviceId);
+            try
+            {
+                dataReceiver.GetData(deviceId);
+            }
+            catch (ArgumentException ex)
+            {
+                // no data
+                MessageBox.Show("This smart watch does not contain any data.\n"+ex.Message);
+            }
             Debug.Write("DONE");
 
             ((ProgressSubject)dataReceiver).UnregisterObserver(this);
             this.worker = null;
         }
 
-        void workerGet_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             int nr = e.ProgressPercentage;
             Debug.WriteLine(nr);
@@ -111,6 +100,7 @@ namespace IoTDataReceiver
             Debug.Write("DONEE");
         }
 
+
         // --------------------------------------- PROCESS ---------------------------------------
         private void btnProcess_Click(object sender, RoutedEventArgs e)
         {
@@ -118,7 +108,7 @@ namespace IoTDataReceiver
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerProcess_DoWork;
-            worker.ProgressChanged += workerProcess_ProgressChanged;
+            worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerProcess_RunWorkerCompleted;
 
             worker.WorkerSupportsCancellation = false; // TODO cancel???
@@ -126,9 +116,10 @@ namespace IoTDataReceiver
             worker.RunWorkerAsync();
         }
 
+
         void workerProcess_DoWork(object sender, DoWorkEventArgs e)
         {
-         //   Guid deviceId = (Guid)e.Argument;
+            //   Guid deviceId = (Guid)e.Argument;
 
             ((ProgressSubject)dataReceiver).RegisterObserver(this);
             this.worker = (BackgroundWorker)sender;
@@ -140,18 +131,11 @@ namespace IoTDataReceiver
             this.worker = null;
         }
 
-        void workerProcess_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            int nr = e.ProgressPercentage;
-            Debug.WriteLine(nr);
-            progressBar.IsIndeterminate = nr == -1;
-            progressBar.Value = nr;
-        }
-
         void workerProcess_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Debug.Write("DONEE");
         }
+
 
         // --------------------------------------- UPLOAD ---------------------------------------
         private void btnUpload_Click(object sender, RoutedEventArgs e)
@@ -160,7 +144,7 @@ namespace IoTDataReceiver
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerSend_DoWork;
-            worker.ProgressChanged += workerSend_ProgressChanged;
+            worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerSend_RunWorkerCompleted;
 
             worker.WorkerSupportsCancellation = false; // TODO cancel???
@@ -183,65 +167,55 @@ namespace IoTDataReceiver
             this.worker = null;
         }
 
-        void workerSend_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            int nr = e.ProgressPercentage;
-            Debug.WriteLine(nr);
-            progressBar.IsIndeterminate = nr == -1;
-            progressBar.Value = nr;
-        }
-
         void workerSend_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Debug.Write("DONEE");
         }
+
 
         // --------------------------------------- CLEAR&SETUP ---------------------------------------
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             if (listBoxWatches.SelectedItem == null) return;
 
+            Guid deviceId = ((ListViewDeviceItem)listBoxWatches.SelectedItem).DeviceId;
 
             SetupWindow w = new SetupWindow(dataReceiver);
             w.Owner = this;
             w.ShowDialog();
 
+            string username = w.Username;
 
+            object[] args = new object[] { deviceId, username };
 
-        /*    BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += workerSet_DoWork;
-            worker.ProgressChanged += workerSet_ProgressChanged;
-            worker.RunWorkerCompleted += workerSet_RunWorkerCompleted;
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += workerClear_DoWork;
+            worker.ProgressChanged += worker_ProgressChanged;
+            worker.RunWorkerCompleted += workerClear_RunWorkerCompleted;
 
             worker.WorkerSupportsCancellation = false; // TODO cancel???
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync();*/
+            worker.RunWorkerAsync(args);
 
         }
 
-        void workerSet_DoWork(object sender, DoWorkEventArgs e)
+        void workerClear_DoWork(object sender, DoWorkEventArgs e)
         {
-            //   Guid deviceId = (Guid)e.Argument;
+            object[] args = (object[])e.Argument;
+            Guid deviceId = (Guid)args[0];
+            string username = (string)args[1];
 
             ((ProgressSubject)dataReceiver).RegisterObserver(this);
             this.worker = (BackgroundWorker)sender;
 
-            dataReceiver.SendData();
+            dataReceiver.PrepareDevice(deviceId, username, SettingsService.Instance.Settings);
             Debug.Write("DONE");
 
             ((ProgressSubject)dataReceiver).UnregisterObserver(this);
             this.worker = null;
         }
 
-        void workerSet_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            int nr = e.ProgressPercentage;
-            Debug.WriteLine(nr);
-            progressBar.IsIndeterminate = nr == -1;
-            progressBar.Value = nr;
-        }
-
-        void workerSet_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        void workerClear_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Debug.Write("DONEE");
         }

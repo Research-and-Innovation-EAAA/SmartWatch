@@ -27,30 +27,30 @@
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Label x:Name="label0" Content="Patient's username" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top"/>
-            <TextBox x:Name="tBoxUsername"  HorizontalAlignment="Stretch" Height="23" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Username}" VerticalAlignment="Top" />
-            
+            <Label x:Name="label0" Content="Patient's username" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+            <ComboBox x:Name="cBoxPatients" SelectedItem="{Binding Path=Username}"  HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"/>
             <Separator Grid.Row="1" Grid.ColumnSpan="2" />
-            
-            <Label x:Name="label1" Content="Frequency" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" VerticalAlignment="Top"/>
-            <TextBox x:Name="tBoxFrequency"  HorizontalAlignment="Stretch" Height="23" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Frequency}" VerticalAlignment="Top" />
 
-            <Label x:Name="label2" Content="Period" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="0" VerticalAlignment="Top" />
-           <!-- <StackPanel Height="23" Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
+            <Label x:Name="label1" Content="Frequency" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+            <TextBox x:Name="tBoxFrequency"  HorizontalAlignment="Stretch" Height="23" Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Settings[frequency]}" VerticalAlignment="Center" />
+
+            <Label x:Name="label2" Content="Period" HorizontalAlignment="Left" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" />
+            <!-- <StackPanel Height="23" Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
                 <Label x:Name="label2_1" Content="days" />
                 <Label x:Name="label2_2" Content="hours" />
             </StackPanel> -->
-            <TextBox x:Name="tBoxPeriod"  HorizontalAlignment="Stretch" Height="23" Grid.Row="3" Grid.Column="2" TextWrapping="Wrap" Text="{Binding Path=Period}" VerticalAlignment="Top"/>
+            <TextBox x:Name="tBoxPeriod"  HorizontalAlignment="Stretch" Height="23" Grid.Row="3" Grid.Column="2" TextWrapping="Wrap" Text="{Binding Path=Settings[period]}" VerticalAlignment="Center"/>
 
             <Separator Grid.Row="4" Grid.ColumnSpan="2" />
 
-            <Label x:Name="label3" Content="Study center" HorizontalAlignment="Left" Grid.Row="5" Grid.Column="0" VerticalAlignment="Top"/>
-            <TextBox x:Name="tBoxSCenter"  HorizontalAlignment="Stretch" Height="23" Grid.Row="5" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=StudyCenter}" VerticalAlignment="Top"/>
+            <Label x:Name="label3" Content="Study center" HorizontalAlignment="Left" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center"/>
+            <TextBox x:Name="tBoxSCenter"  HorizontalAlignment="Stretch" Height="23" Grid.Row="5" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Settings[studyCenter]}" VerticalAlignment="Center"/>
 
-            <Label x:Name="label4" Content="Study code" HorizontalAlignment="Left" Grid.Row="6" Grid.Column="0" VerticalAlignment="Top"/>
-            <TextBox x:Name="tBoxSCode"  HorizontalAlignment="Stretch" Height="23" Grid.Row="6" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=StudyCode}" VerticalAlignment="Top"/>
+            <Label x:Name="label4" Content="Study code" HorizontalAlignment="Left" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center"/>
+            <TextBox x:Name="tBoxSCode"  HorizontalAlignment="Stretch" Height="23" Grid.Row="6" Grid.Column="1" TextWrapping="Wrap" Text="{Binding Path=Settings[studyCode]}" VerticalAlignment="Center"/>
 
-            <Label x:Name="label5" Content=":-)" HorizontalAlignment="Center" Grid.Row="7" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
+            <Label x:Name="label5" Content=":-)" HorizontalAlignment="Center" Grid.Row="7" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
+
         </Grid>
     </DockPanel>
 

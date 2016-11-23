@@ -57,8 +57,8 @@ namespace IoTDataReceiver
             }
 
             Directory.CreateDirectory(path + "temp");
-
             GeneaDateTime startTime = device.ReadData(1, 1)[0].DataHeader.PageTime;
+
             string startTimeUtc = startTime.ToDateTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo);
             string fileName = path + @"temp\" + device.SubjectInfo.SubjectCode + "_" + startTime.ToDateTime().ToString("yyyyMMddHHmmss") + ".csv";
 
@@ -67,7 +67,7 @@ namespace IoTDataReceiver
                 filer.ExtractOperatorID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
                 filer.ExtractNotes = "Downloaded by IoTDataReceiver";
 
-                filer.WriteDataProgress += this.OnExtractProgress; 
+                filer.WriteDataProgress += this.OnExtractProgress;
                 filer.CreateFile();
                 filer.WriteStoredData();
                 filer.CloseFile();
@@ -172,6 +172,39 @@ namespace IoTDataReceiver
             //TODO update listview  Dispatcher.BeginInvoke(new Action(() => CollectionViewSource.GetDefaultView(Devices).Refresh()));
         }
 
+        private void SetupDevice(IGeneaDevice device, string username, float frequency, int period, string studyCenter, string studyCode)
+        {
+            GeneaConfigInfoRW deviceConfigInfo = new GeneaConfigInfoRW();
+            deviceConfigInfo.ConfigOperatorID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            deviceConfigInfo.ConfigNotes = "Setup by IoTDataReceiver";
+            deviceConfigInfo.StartMode = GeneaStartMode.OnButton;
+            deviceConfigInfo.MeasurementFrequency = frequency;
+            deviceConfigInfo.MeasurementPeriod = period;
 
+            GeneaSubjectInfoRW deviceSubjectInfo = new GeneaSubjectInfoRW();
+            deviceSubjectInfo.SubjectCode = username;
+            deviceSubjectInfo.SubjectNotes = "";
+            /*deviceSubjectInfo.BodyLocation = GeneaBodyLocation.None;
+            deviceSubjectInfo.DateOfBirth = null;
+            deviceSubjectInfo.Handedness = GeneaHandedness.None;*/
+
+            GeneaTrialInfoRW deviceTrialInfo = new GeneaTrialInfoRW();
+            deviceTrialInfo.InvestigatorID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            deviceTrialInfo.StudyCentre = studyCenter;
+            deviceTrialInfo.StudyCode = studyCode;
+
+            device.SetupDevice(deviceConfigInfo, deviceSubjectInfo, deviceTrialInfo, true);
+        }
+
+        public void SetupDevice(Guid deviceId, string username, Dictionary<string, string> settings)
+        {
+            IGeneaDevice device = smartWatches[deviceId];
+            float frequency = float.Parse(settings["frequency"], CultureInfo.InvariantCulture);
+            int period = int.Parse(settings["period"], CultureInfo.InvariantCulture);
+            string studyCenter = settings["studyCenter"];
+            string studyCode = settings["studyCode"];
+
+            this.SetupDevice(device, username, frequency, period, studyCenter, studyCode);
+        }
     }
 }

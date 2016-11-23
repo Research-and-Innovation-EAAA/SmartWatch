@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
@@ -8,20 +9,19 @@ namespace IoTDataReceiver
     /// </summary>
     public partial class SetupWindow : Window
     {
-        private IDataReceiver dataReceiver;
-        private Settings settings;
+        //private Dictionary<string, string> settings;
+        public Dictionary<string, string> Settings { get; set; }
 
         public SetupWindow(IDataReceiver dataReceiver)
         {
             InitializeComponent();
-            this.dataReceiver = dataReceiver;
-            this.settings = SettingsService.Instance.Settings;
+            this.Settings = new Dictionary<string, string>(SettingsService.Instance.Settings); // copy of existing settings, to allow rolling back (cancel button)
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = this.settings;
-            this.tBoxUsername.DataContext = this;
+            this.DataContext = this;
+            cBoxPatients.ItemsSource = PatientService.Instance.GetPatients();
         }
 
         public string Username { get; set; }
@@ -31,7 +31,7 @@ namespace IoTDataReceiver
             MessageBoxResult result = MessageBox.Show("Is this ok?\n" + SettingsService.Instance.Settings+"\nUsername: " + Username, "Ok?", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                SettingsService.Instance.Settings = this.settings; // TODO cancel + saving 
+                SettingsService.Instance.Settings = this.Settings; // TODO cancel + saving 
                 this.Close();
             }
         }

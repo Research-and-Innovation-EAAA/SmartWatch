@@ -16,9 +16,11 @@ namespace IoTDataReceiver
         /// </summary>
         /// <param name="deviceId">Identifier of the device to download data from</param>
         /// <param name="path">Path to a folder where to create a temp/ with output file</param>
-        /// <returns>Path to cretef CSV file, beware of the naming requirement!</returns>
+        /// <returns>Path to created CSV file, beware of the naming requirement!</returns>
         string DownloadData(Guid deviceId, string path);
         //TODO how to model a singleton? - cannot
+
+        void SetupDevice(Guid deviceId, string username, Dictionary<string, string> settings);
 
         ObservableCollection<ListViewDeviceItem> GetConnectedDevices();
     }
