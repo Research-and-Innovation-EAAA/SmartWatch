@@ -37,19 +37,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GeneActiv.DeviceIOLibrary">
-      <HintPath>..\..\..\..\..\Desktop\GENEActivAPI\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DeviceIOLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DeviceIOLibrary.dll</HintPath>
     </Reference>
     <Reference Include="GeneActiv.DotNetLibrary">
-      <HintPath>..\..\..\..\..\Desktop\GENEActivAPI\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DotNetLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DotNetLibrary.dll</HintPath>
     </Reference>
     <Reference Include="GeneActiv.GeneaLibrary">
-      <HintPath>..\..\..\..\..\Desktop\GENEActivAPI\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.GeneaLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.GeneaLibrary.dll</HintPath>
     </Reference>
     <Reference Include="GeneActiv.WinUsbLibrary">
-      <HintPath>..\..\..\..\..\Desktop\GENEActivAPI\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.WinUsbLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.WinUsbLibrary.dll</HintPath>
     </Reference>
     <Reference Include="InTheHand.Net.Personal">
-      <HintPath>..\..\..\..\..\Desktop\GENEActivAPI\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\InTheHand.Net.Personal.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\InTheHand.Net.Personal.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -101,6 +101,7 @@
     <Compile Include="ListViewDeviceItem.cs" />
     <Compile Include="MyClasses.cs" />
     <Compile Include="PatientService.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SettingsService.cs" />
     <Compile Include="SetupWindow.xaml.cs">
       <DependentUpon>SetupWindow.xaml</DependentUpon>

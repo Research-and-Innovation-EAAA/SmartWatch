@@ -215,11 +215,23 @@ namespace IoTDataReceiver
             ((ProgressSubject)dataReceiver).RegisterObserver(this);
             this.worker = (BackgroundWorker)sender;
 
-            dataReceiver.PrepareDevice(deviceId, username, SettingsService.Instance.Settings);
+            try
+            {
+                dataReceiver.PrepareDevice(deviceId, username, SettingsService.Instance.Settings);
+            }
+            catch(MyExceptions.DeviceException ex)
+            {
+                MessageBox.Show("Error setting up the device.\n" + ex.Message);
+            }
+            finally
+            {
+                ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+                this.worker = null;
+            }
+
+
             Debug.Write("DONE");
 
-            ((ProgressSubject)dataReceiver).UnregisterObserver(this);
-            this.worker = null;
         }
 
         void workerClear_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

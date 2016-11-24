@@ -22,5 +22,53 @@ namespace IoTDataReceiver.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("75")]
+        public string frequency {
+            get {
+                return ((string)(this["frequency"]));
+            }
+            set {
+                this["frequency"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("240")]
+        public string period {
+            get {
+                return ((string)(this["period"]));
+            }
+            set {
+                this["period"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("AUH-EAAA")]
+        public string studyCenter {
+            get {
+                return ((string)(this["studyCenter"]));
+            }
+            set {
+                this["studyCenter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("TEST")]
+        public string studyCode {
+            get {
+                return ((string)(this["studyCode"]));
+            }
+            set {
+                this["studyCode"] = value;
+            }
+        }
     }
 }

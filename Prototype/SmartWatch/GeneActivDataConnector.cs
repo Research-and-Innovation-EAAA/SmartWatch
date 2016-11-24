@@ -1,4 +1,5 @@
-﻿using GeneActiv.DotNetLibrary;
+﻿using GeneActiv.DeviceIOLibrary;
+using GeneActiv.DotNetLibrary;
 using GeneActiv.GeneaLibrary;
 using System;
 using System.Collections.Generic;
@@ -78,13 +79,20 @@ namespace IoTDataReceiver
 
                 filer.WriteDataProgress += this.OnExtractProgress;
                 filer.CreateFile();
-                
-                    filer.WriteStoredData(); // debug exception communivation error, catch
-                
-                filer.CloseFile();
-                filer.WriteDataProgress -= this.OnExtractProgress;
+                try
+                {
+                    filer.WriteStoredData();
+                }
+                catch (DeviceIOException ex)
+                {
+                    throw new MyExceptions.CommunicationException();
+                }
+                finally {
+                    filer.CloseFile();
+                    filer.WriteDataProgress -= this.OnExtractProgress;
+                }
 
-                return fileName;
+                    return fileName;
             }
         }
 
@@ -204,7 +212,13 @@ namespace IoTDataReceiver
             deviceTrialInfo.StudyCentre = studyCenter;
             deviceTrialInfo.StudyCode = studyCode;
 
-            device.SetupDevice(deviceConfigInfo, deviceSubjectInfo, deviceTrialInfo, true);
+            try
+            {
+                device.SetupDevice(deviceConfigInfo, deviceSubjectInfo, deviceTrialInfo, true);
+            }catch(GeneaDeviceException ex)
+            {
+                throw new MyExceptions.DeviceException(ex.Message);
+            }
         }
 
         public void SetupDevice(Guid deviceId, string username, Dictionary<string, string> settings)

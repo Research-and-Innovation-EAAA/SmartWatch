@@ -1,26 +1,48 @@
 ﻿using System.Collections.Generic;
+using System.Configuration;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
     class SettingsService
     {
-        public Dictionary<string, string> Settings { get; set; }
+        private Dictionary<string, string> settings;
+        public Dictionary<string, string> Settings {
+            get { return new Dictionary<string, string>(this.settings); }
+            set {
+                this.settings = new Dictionary<string, string>(value);
+                Properties.Settings.Default.frequency = this.settings["frequency"];
+                Properties.Settings.Default.period = this.settings["period"];
+                Properties.Settings.Default.studyCenter = this.settings["studyCenter"];
+                Properties.Settings.Default.studyCode = this.settings["studyCode"];
+                Properties.Settings.Default.Save();
+            }
+        }
 
         private static SettingsService instance = null;
 
         private SettingsService()
         {
-            string frequency = (string)Properties.Settings.Default["frequency"] ?? "75";
-            string period = (string)Properties.Settings.Default["period"] ?? "240"; //24 hours * 10 days = 240
-            string studyCenter = (string)Properties.Settings.Default["studyCenter"] ?? "AUH-EAAA"; // TODO change to AUH, GIGT
-            string studyCode = (string)Properties.Settings.Default["studyCode"] ?? "TEST";
-            Settings = new Dictionary<string, string>();
-            Settings.Add("frequency", frequency);
-            Settings.Add("period", period);
-            Settings.Add("studyCenter", studyCenter);
-            Settings.Add("studyCode", studyCode); 
-            //testctest
+            string frequency, period, studyCenter, studyCode;
+            try
+            {
+                frequency = (string)Properties.Settings.Default["frequency"];
+                period = (string)Properties.Settings.Default["period"];
+                studyCenter = (string)Properties.Settings.Default["studyCenter"];
+                studyCode = (string)Properties.Settings.Default["studyCode"];
+            }
+            catch (SettingsPropertyNotFoundException ex)
+            {
+                frequency = "75";
+                period = "240"; //24 hours * 10 days = 240
+                studyCenter = "AUH-EAAA"; // TODO change to AUH
+                studyCode = "TEST"; // TODO change to GIGT
+            }
+            this.settings = new Dictionary<string, string>();
+            this.settings.Add("frequency", frequency);
+            this.settings.Add("period", period);
+            this.settings.Add("studyCenter", studyCenter);
+            this.settings.Add("studyCode", studyCode);
         }
 
         public static SettingsService Instance

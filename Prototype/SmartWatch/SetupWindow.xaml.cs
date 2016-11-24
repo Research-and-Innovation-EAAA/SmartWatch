@@ -9,36 +9,39 @@ namespace IoTDataReceiver
     /// </summary>
     public partial class SetupWindow : Window
     {
-        //private Dictionary<string, string> settings;
+        private List<string> frequencies;
         public Dictionary<string, string> Settings { get; set; }
 
         public SetupWindow(IDataReceiver dataReceiver)
         {
             InitializeComponent();
             this.Settings = new Dictionary<string, string>(SettingsService.Instance.Settings); // copy of existing settings, to allow rolling back (cancel button)
-        }
+            this.frequencies = new List<string> {
+                "10","20","25","30","40","50","60","66,7","75","85,7","100"};
+    }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+        this.DataContext = this;
+        cBoxPatients.ItemsSource = PatientService.Instance.GetPatients();
+        cBoxFrequency.ItemsSource = this.frequencies;
+    }
+
+    public string Username { get; set; }
+
+    private void btnOk_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBoxResult result = MessageBox.Show("Do you really want to erase all the data from the smart watch?", "Erase?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (result == MessageBoxResult.Yes)
         {
-            this.DataContext = this;
-            cBoxPatients.ItemsSource = PatientService.Instance.GetPatients();
-        }
-
-        public string Username { get; set; }
-
-        private void btnOk_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxResult result = MessageBox.Show("Is this ok?\n" + SettingsService.Instance.Settings+"\nUsername: " + Username, "Ok?", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                SettingsService.Instance.Settings = this.Settings; // TODO cancel + saving 
-                this.Close();
-            }
-        }
-
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
+            SettingsService.Instance.Settings = this.Settings; // TODO return erase, or cancel
             this.Close();
         }
     }
+
+    private void btnCancel_Click(object sender, RoutedEventArgs e)
+    {
+        this.Close();
+    }
+}
 }
