@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
 namespace IoTDataReceiver
 {
-    class DataReceiver : ProgressSubject, IDataReceiver, IProgressObserver
+    class DataReceiver : ProgressSubject, IDataReceiver, IProgressObserver, INotifyPropertyChanged
     {
         IDataConnector dataConnector;
         IProcessAlgorithm algorithm;
@@ -25,13 +26,18 @@ namespace IoTDataReceiver
             }
         }
 
+        public DataProcessStep CurrentStep
+        {
+            get { return this.currentStep; }
+        }
+
         private DataReceiver()
         {
             this.dataConnector = new GeneActivDataConnector();
             this.algorithm = new DummyAlgorithm();
             this.patients = PatientService.Instance;
             this.howRYou = HowRYouConnector.Instance;
-            this.status = 0;
+            this.currentStep = DataProcessStep.WatchInserted;
         }
 
         public ObservableCollection<ListViewDeviceItem> GetConnectedDevices()
@@ -39,17 +45,18 @@ namespace IoTDataReceiver
             return dataConnector.GetConnectedDevices();
         }
 
-        private int status; // 0 not, 1 loaded, 2 processed, 3 sent
-        public int GetStatus() { return this.status; }
+        private DataProcessStep currentStep; 
+        public DataProcessStep GetCurrentStep() { return this.currentStep; }
 
         const string PATH = @"c:\SmartWatch\realtest\";
         private string pathCsv, pathZip;
         private string viewData;
         private string username, date;
 
+
         public void GetData(Guid deviceId)
         {
-            if (status != 0) return;
+            if (currentStep != DataProcessStep.WatchInserted) return;
 
             // Determine whether the directory exists
             if (Directory.Exists(PATH))
@@ -80,20 +87,23 @@ namespace IoTDataReceiver
             this.username = info[0];
             this.date = info[1];
 
-            status = 1;
+            currentStep = DataProcessStep.DataDownloaded;
+            OnPropertyChanged("CurrentStep");
         }
 
         public void ProcessData()
         {
-            if (status != 1) return;
+            if (currentStep != DataProcessStep.DataDownloaded) return;
 
             base.NotifyObservers(-1);
-            this.pathZip = zipFile(PATH);
 
+            this.pathZip = zipFile(PATH);
             this.viewData = this.algorithm.ProcessDataFromFile(this.pathCsv, test);
+
             base.NotifyObservers(100); // to show we are done
 
-            status = 2;
+            currentStep = DataProcessStep.DataProcessed;
+            OnPropertyChanged("CurrentStep");
         }
 
         private void test(int progress)
@@ -104,7 +114,6 @@ namespace IoTDataReceiver
 
         private static string zipFile(string path)
         {
-
             string tempFolderPath = path + @"temp";
             string zipFilePath = path + @"data.zip";
             if (!Directory.Exists(tempFolderPath))
@@ -118,24 +127,33 @@ namespace IoTDataReceiver
 
         public void SendData()
         {
-            if (status != 2) return;
+            if (currentStep != DataProcessStep.DataProcessed) return;
 
             base.NotifyObservers(-1);
 
-            string password = patients.GetPassword(this.username);
-            /*         var token = howRYou.Login(this.username, password);
-                     howRYou.UploadFile(this.pathZip, token);
-                     howRYou.UploadViewData(this.viewData, this.date, token); 
-                     howRYou.Logout(token);*/
+            string password;
+            try
+            {
+                password = patients.GetPassword(this.username);
+            }
+            catch (NullReferenceException ex)
+            {
+                throw new MyExceptions.UnknownPatientException();
+            }
+            var token = howRYou.Login(this.username, password);
+            howRYou.UploadFile(this.pathZip, token);
+            howRYou.UploadViewData(this.viewData, this.date, token);
+            howRYou.Logout(token);
 
             base.NotifyObservers(100); // to show we are done
 
-            status = 3;
+            currentStep = DataProcessStep.DataUploaded;
+            OnPropertyChanged("CurrentStep");
         }
 
         public void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings)
         {
-            //if (status != 3) return;
+          //  if (currentStep != DataProcessStep.DataUploaded) return;
 
             base.NotifyObservers(-1);
 
@@ -143,12 +161,27 @@ namespace IoTDataReceiver
 
             base.NotifyObservers(100); // to show we are done
 
-            status = 4;
+            currentStep = DataProcessStep.WatchCleared;
+            OnPropertyChanged("CurrentStep");
         }
 
         public void Notify(int progress)
         {
             base.NotifyObservers(progress);
         }
+
+        #region INotifyPropertyChanged
+
+        /// <summary>
+        /// OnPropertyChanged method to raise the event
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
     }
 }

@@ -52,7 +52,9 @@ namespace IoTDataReceiver
 
         public string GetPassword(string username)
         {
-            return username + username;
+            if (this.patients == null)
+                LoadPatients();
+            return this.patients[username];
         }
 
     }

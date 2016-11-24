@@ -20,7 +20,7 @@ namespace IoTDataReceiver
 
         ObservableCollection<ListViewDeviceItem> GetConnectedDevices();
 
-        int GetStatus();
+        DataProcessStep CurrentStep { get; }
 
     }
 }

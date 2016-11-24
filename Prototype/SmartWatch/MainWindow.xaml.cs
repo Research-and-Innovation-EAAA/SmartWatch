@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
@@ -22,8 +23,47 @@ namespace IoTDataReceiver
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             listBoxWatches.ItemsSource = dataReceiver.GetConnectedDevices();
-
             listBoxWatches.ItemTemplateSelector = new WatchTemplateSelector();
+
+            BindingOperations.SetBinding(btnGet, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
+            {
+                Source = this.dataReceiver,
+                Path = new PropertyPath("CurrentStep"),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                Converter = new EnabledStepConverter(),
+                ConverterParameter = DataProcessStep.WatchInserted // <-- when to be enabled
+            });
+
+            BindingOperations.SetBinding(btnProcess, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
+            {
+                Source = this.dataReceiver,
+                Path = new PropertyPath("CurrentStep"),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                Converter = new EnabledStepConverter(),
+                ConverterParameter = DataProcessStep.DataDownloaded // <-- when to be enabled
+            });
+
+            BindingOperations.SetBinding(btnUpload, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
+            {
+                Source = this.dataReceiver,
+                Path = new PropertyPath("CurrentStep"),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                Converter = new EnabledStepConverter(),
+                ConverterParameter = DataProcessStep.DataProcessed // <-- when to be enabled
+            });
+
+            BindingOperations.SetBinding(btnClear, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
+            {
+                Source = this.dataReceiver,
+                Path = new PropertyPath("CurrentStep"),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                Converter = new EnabledStepConverter(),
+                ConverterParameter = DataProcessStep.DataUploaded // <-- when to be enabled
+            });
         }
 
         private void btnSet_Click(object sender, RoutedEventArgs e)
@@ -74,10 +114,12 @@ namespace IoTDataReceiver
             }
             catch (MyExceptions.NoDataException ex)
             {
-                MessageBox.Show("This smart watch does not contain any data.\n"+ex.Message);
+                this.worker.ReportProgress(0);
+                MessageBox.Show("This smart watch does not contain any data.\n" + ex.Message);
             }
             catch (MyExceptions.CommunicationException ex)
             {
+                this.worker.ReportProgress(0);
                 MessageBox.Show("Error reading data.\n" + ex.Message);
             }
             finally
@@ -87,7 +129,7 @@ namespace IoTDataReceiver
             }
             Debug.Write("DONE");
 
-            
+
         }
 
         void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -167,11 +209,22 @@ namespace IoTDataReceiver
             ((ProgressSubject)dataReceiver).RegisterObserver(this);
             this.worker = (BackgroundWorker)sender;
 
-            dataReceiver.SendData();
-            Debug.Write("DONE");
+            try
+            {
+                dataReceiver.SendData();
+            }
+            catch (MyExceptions.UnauthorizedException ex)
+            {
+                this.worker.ReportProgress(0);
+                MessageBox.Show("Wrong password for the patient, cannot log in.\n" + ex.Message);
+            }
+            finally
+            {
+                ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+                this.worker = null;
+            }
 
-            ((ProgressSubject)dataReceiver).UnregisterObserver(this);
-            this.worker = null;
+            Debug.Write("DONE");
         }
 
         void workerSend_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -219,8 +272,9 @@ namespace IoTDataReceiver
             {
                 dataReceiver.PrepareDevice(deviceId, username, SettingsService.Instance.Settings);
             }
-            catch(MyExceptions.DeviceException ex)
+            catch (MyExceptions.DeviceException ex)
             {
+                this.worker.ReportProgress(0);
                 MessageBox.Show("Error setting up the device.\n" + ex.Message);
             }
             finally

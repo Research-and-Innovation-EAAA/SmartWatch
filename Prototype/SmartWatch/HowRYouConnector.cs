@@ -25,7 +25,7 @@ namespace IoTDataReceiver
         private HowRYouConnector() { }
 
 
-        private RestClient client = new RestClient("http://localhost:3000/api/v1");
+        private RestClient client = new RestClient("http://192.168.56.101:3000/api/v1");
         public HowRYouLoginToken Login(string username, string password)
         {
             // prepare the request
@@ -35,6 +35,11 @@ namespace IoTDataReceiver
 
             // execute the request
             IRestResponse response = client.Execute(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                throw new MyExceptions.UnauthorizedException();
+            }
             var content = response.Content; // raw content as a string
             Debug.WriteLine("API response: " + content);
 
@@ -77,15 +82,15 @@ namespace IoTDataReceiver
         public void UploadViewData(string jsonData, string date, HowRYouLoginToken token)
         {
             // prepare the request
-            var request3 = new RestRequest("smartwatchview", Method.POST);
-            request3.AddHeader("X-User-id", token.userId);
-            request3.AddHeader("X-Auth-Token", token.authToken);
-            request3.AddParameter("device", "smartwatch");
-            request3.AddParameter("date", date);
-            request3.AddParameter("data", jsonData);
+            var request = new RestRequest("smartwatchview", Method.POST);
+            request.AddHeader("X-User-id", token.userId);
+            request.AddHeader("X-Auth-Token", token.authToken);
+            request.AddParameter("device", "smartwatch");
+            request.AddParameter("date", date);
+            request.AddParameter("data", jsonData);
 
             // execute the request
-            IRestResponse response = client.Execute(request3);
+            IRestResponse response = client.Execute(request);
             var content = response.Content; // raw content as string
             Debug.WriteLine(content);
         }

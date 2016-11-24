@@ -48,5 +48,35 @@ namespace IoTDataReceiver
                 : base(message, innerException)
             { }
         }
+
+        [Serializable]
+        public class UnauthorizedException : Exception
+        {
+            public UnauthorizedException()
+            { }
+
+            public UnauthorizedException(string message)
+                : base(message)
+            { }
+
+            public UnauthorizedException(string message, Exception innerException)
+                : base(message, innerException)
+            { }
+        }
+
+        [Serializable]
+        public class UnknownPatientException : Exception
+        {
+            public UnknownPatientException()
+            { }
+
+            public UnknownPatientException(string message)
+                : base(message)
+            { }
+
+            public UnknownPatientException(string message, Exception innerException)
+                : base(message, innerException)
+            { }
+        }
     }
 }
