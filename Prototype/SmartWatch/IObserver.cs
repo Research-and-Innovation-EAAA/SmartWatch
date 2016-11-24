@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace IoTDataReceiver
 {
+    /*
     interface IProgressObserver
     {
         /// <summary>
@@ -38,5 +39,5 @@ namespace IoTDataReceiver
             foreach (IProgressObserver o in this.observers)
                 o.Notify(progress);
         }
-    }
+    }*/
 }

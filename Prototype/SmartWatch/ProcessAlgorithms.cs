@@ -4,28 +4,37 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
-    delegate void ProgressUpdate(int percent);
-    interface IProcessAlgorithm
+    public interface IProcessAlgorithm
     {
         /// <summary>
         /// Method for processing large amount of data and returning smaller subset in JSON format.
         /// </summary>
         /// <param name="path">Path to a CSV file to process</param>
         /// <returns>JSON string with a timestamp and computed data values</returns>
-        string ProcessDataFromFile(string path, ProgressUpdate p);
+        string ProcessDataFromFile(string path);
+
+        event ProgressUpdateHandler ProgressUpdate;
     }
+
+
     /// <summary>
     /// Dummy algorithm that calculates average every 1000th record
     /// </summary>
     class DummyAlgorithm : IProcessAlgorithm
     {
-        public string ProcessDataFromFile(string path, ProgressUpdate p)
+        public event ProgressUpdateHandler ProgressUpdate;
+
+        protected virtual void OnProgressUpdate(int progress)
+        {
+            ProgressUpdateHandler handler = ProgressUpdate;
+            if (handler != null) handler(progress);
+        }
+
+        public string ProcessDataFromFile(string path)
         {
             int totalLines = this.CountLines(path);
 
@@ -94,9 +103,8 @@ namespace IoTDataReceiver
 
                 listData.Add(row2);
 
-                p((int)(((double)lineNumber)/ totalLines * 100f));
+                OnProgressUpdate((int)(((double)lineNumber) / totalLines * 100f));
 
-//                lineNumber = 0;
                 avgActivity = 0;
                 avgTemperature = 0;
                 avgLight = 0;
@@ -123,13 +131,13 @@ namespace IoTDataReceiver
             using (StreamReader r = new StreamReader(path))
             {
                 int i = 0;
-                while (r.ReadLine() != null) 
+                while (r.ReadLine() != null)
                     i++;
                 return i;
             }
         }
 
-        class DataClass
+        private class DataClass
         {
             public DateTime timestamp { get; set; }
             /*   public float X { get; set; }

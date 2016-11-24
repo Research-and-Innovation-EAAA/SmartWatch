@@ -5,15 +5,23 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
-    class DataReceiver : ProgressSubject, IDataReceiver, IProgressObserver, INotifyPropertyChanged
+    class DataReceiver : IDataReceiver, INotifyPropertyChanged
     {
         IDataConnector dataConnector;
         IProcessAlgorithm algorithm;
         PatientService patients;
         HowRYouConnector howRYou;
+
+        public event ProgressUpdateHandler ProgressUpdate;
+        protected virtual void OnProgressUpdate(int progress)
+        {
+            ProgressUpdateHandler handler = ProgressUpdate;
+            if (handler != null) handler(progress);
+        }
 
         private static DataReceiver instance = null;
         public static DataReceiver Instance
@@ -45,7 +53,7 @@ namespace IoTDataReceiver
             return dataConnector.GetConnectedDevices();
         }
 
-        private DataProcessStep currentStep; 
+        private DataProcessStep currentStep;
         public DataProcessStep GetCurrentStep() { return this.currentStep; }
 
         const string PATH = @"c:\SmartWatch\realtest\";
@@ -77,9 +85,9 @@ namespace IoTDataReceiver
             // Try to create the directory
             Directory.CreateDirectory(PATH + "temp");
 
-            ((ProgressSubject)dataConnector).RegisterObserver(this);
+            dataConnector.ProgressUpdate += Notify;
             this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
-            ((ProgressSubject)dataConnector).UnregisterObserver(this);
+            dataConnector.ProgressUpdate -= Notify;
 
 
 
@@ -95,21 +103,17 @@ namespace IoTDataReceiver
         {
             if (currentStep != DataProcessStep.DataDownloaded) return;
 
-            base.NotifyObservers(-1);
+            OnProgressUpdate(-1);
 
             this.pathZip = zipFile(PATH);
-            this.viewData = this.algorithm.ProcessDataFromFile(this.pathCsv, test);
+            this.algorithm.ProgressUpdate += Notify;
+            this.viewData = this.algorithm.ProcessDataFromFile(this.pathCsv);
+            this.algorithm.ProgressUpdate -= Notify;
 
-            base.NotifyObservers(100); // to show we are done
+            OnProgressUpdate(100); // to show we are done
 
             currentStep = DataProcessStep.DataProcessed;
             OnPropertyChanged("CurrentStep");
-        }
-
-        private void test(int progress)
-        {
-            Debug.WriteLine("DELEGATE : " + progress);
-            base.NotifyObservers(progress);
         }
 
         private static string zipFile(string path)
@@ -129,14 +133,14 @@ namespace IoTDataReceiver
         {
             if (currentStep != DataProcessStep.DataProcessed) return;
 
-            base.NotifyObservers(-1);
+            OnProgressUpdate(-1);
 
             string password;
             try
             {
                 password = patients.GetPassword(this.username);
             }
-            catch (NullReferenceException ex)
+            catch (KeyNotFoundException ex)
             {
                 throw new MyExceptions.UnknownPatientException();
             }
@@ -145,7 +149,7 @@ namespace IoTDataReceiver
             howRYou.UploadViewData(this.viewData, this.date, token);
             howRYou.Logout(token);
 
-            base.NotifyObservers(100); // to show we are done
+            OnProgressUpdate(100); // to show we are done
 
             currentStep = DataProcessStep.DataUploaded;
             OnPropertyChanged("CurrentStep");
@@ -153,21 +157,21 @@ namespace IoTDataReceiver
 
         public void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings)
         {
-          //  if (currentStep != DataProcessStep.DataUploaded) return;
+            //  if (currentStep != DataProcessStep.DataUploaded) return;
 
-            base.NotifyObservers(-1);
+            OnProgressUpdate(-1);
 
             dataConnector.SetupDevice(deviceId, username, settings);
 
-            base.NotifyObservers(100); // to show we are done
+            OnProgressUpdate(100); // to show we are done
 
             currentStep = DataProcessStep.WatchCleared;
             OnPropertyChanged("CurrentStep");
         }
 
-        public void Notify(int progress)
+        void Notify(int progress)
         {
-            base.NotifyObservers(progress);
+            OnProgressUpdate(progress);
         }
 
         #region INotifyPropertyChanged
@@ -176,6 +180,7 @@ namespace IoTDataReceiver
         /// OnPropertyChanged method to raise the event
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;

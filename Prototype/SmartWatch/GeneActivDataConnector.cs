@@ -12,10 +12,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
-    class GeneActivDataConnector : ProgressSubject, IDataConnector
+    class GeneActivDataConnector : IDataConnector
     {
 
         public GeneActivDataConnector()
@@ -99,7 +100,7 @@ namespace IoTDataReceiver
         private void OnExtractProgress(object sender, GeneaDeviceFilerProgressEventArgs e)
         {
             int progress = (int)(100 * ((double)e.NumOfDataBlocks / (double)e.TotalDataBlocks));
-            base.NotifyObservers(progress);
+            OnProgressUpdate(progress);
         }
 
         private GeneaDeviceManager manager = new GeneaDeviceManager();
@@ -107,6 +108,14 @@ namespace IoTDataReceiver
         private Dictionary<Guid, IGeneaDevice> smartWatches = new Dictionary<Guid, IGeneaDevice>();
 
         private ObservableCollection<ListViewDeviceItem> devices;
+
+        public event ProgressUpdateHandler ProgressUpdate;
+        protected virtual void OnProgressUpdate(int progress)
+        {
+            ProgressUpdateHandler handler = ProgressUpdate;
+            if (handler != null) handler(progress);
+        }
+
         public ObservableCollection<ListViewDeviceItem> GetConnectedDevices() { return devices; }
 
         private ListViewDeviceItem FindDeviceListItem(Guid id)

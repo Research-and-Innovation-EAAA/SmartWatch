@@ -9,6 +9,8 @@ namespace IoTDataReceiver
     public class MyClasses
     {
 
+        public delegate void ProgressUpdateHandler(int percent);
+
         /*    public struct Settings
             {
                 public float Frequency { get; set; }

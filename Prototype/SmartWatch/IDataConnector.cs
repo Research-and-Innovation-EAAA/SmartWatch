@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
@@ -18,7 +19,8 @@ namespace IoTDataReceiver
         /// <param name="path">Path to a folder where to create a temp/ with output file</param>
         /// <returns>Path to created CSV file, beware of the naming requirement!</returns>
         string DownloadData(Guid deviceId, string path);
-        //TODO how to model a singleton? - cannot
+        
+        event ProgressUpdateHandler ProgressUpdate;
 
         void SetupDevice(Guid deviceId, string username, Dictionary<string, string> settings);
 

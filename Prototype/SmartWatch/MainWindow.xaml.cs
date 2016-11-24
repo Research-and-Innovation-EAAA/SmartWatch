@@ -11,7 +11,7 @@ namespace IoTDataReceiver
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IProgressObserver
+    public partial class MainWindow : Window
     {
         private IDataReceiver dataReceiver;
         public MainWindow()
@@ -105,7 +105,7 @@ namespace IoTDataReceiver
         {
             Guid deviceId = (Guid)e.Argument;
 
-            ((ProgressSubject)dataReceiver).RegisterObserver(this);
+            dataReceiver.ProgressUpdate += Notify;
             this.worker = (BackgroundWorker)sender;
 
             try
@@ -124,7 +124,7 @@ namespace IoTDataReceiver
             }
             finally
             {
-                ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+                dataReceiver.ProgressUpdate -= Notify;
                 this.worker = null;
             }
             Debug.Write("DONE");
@@ -170,13 +170,13 @@ namespace IoTDataReceiver
         {
             //   Guid deviceId = (Guid)e.Argument;
 
-            ((ProgressSubject)dataReceiver).RegisterObserver(this);
+            dataReceiver.ProgressUpdate += Notify;
             this.worker = (BackgroundWorker)sender;
 
             dataReceiver.ProcessData();
             Debug.Write("DONE");
 
-            ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+            dataReceiver.ProgressUpdate -= Notify;
             this.worker = null;
         }
 
@@ -206,7 +206,7 @@ namespace IoTDataReceiver
         {
             //   Guid deviceId = (Guid)e.Argument;
 
-            ((ProgressSubject)dataReceiver).RegisterObserver(this);
+            dataReceiver.ProgressUpdate += Notify;
             this.worker = (BackgroundWorker)sender;
 
             try
@@ -220,7 +220,7 @@ namespace IoTDataReceiver
             }
             finally
             {
-                ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+                dataReceiver.ProgressUpdate -= Notify;
                 this.worker = null;
             }
 
@@ -265,7 +265,7 @@ namespace IoTDataReceiver
             Guid deviceId = (Guid)args[0];
             string username = (string)args[1];
 
-            ((ProgressSubject)dataReceiver).RegisterObserver(this);
+            dataReceiver.ProgressUpdate += Notify;
             this.worker = (BackgroundWorker)sender;
 
             try
@@ -279,7 +279,7 @@ namespace IoTDataReceiver
             }
             finally
             {
-                ((ProgressSubject)dataReceiver).UnregisterObserver(this);
+                dataReceiver.ProgressUpdate -= Notify;
                 this.worker = null;
             }
 
