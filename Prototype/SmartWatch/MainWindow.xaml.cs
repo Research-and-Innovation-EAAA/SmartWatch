@@ -218,6 +218,11 @@ namespace IoTDataReceiver
                 this.worker.ReportProgress(0);
                 MessageBox.Show("Wrong password for the patient, cannot log in.\n" + ex.Message);
             }
+            catch (MyExceptions.UnknownPatientException ex)
+            {
+                this.worker.ReportProgress(0);
+                MessageBox.Show("Unknown patient, cannot find information.\n" + ex.Message);
+            }
             finally
             {
                 dataReceiver.ProgressUpdate -= Notify;
@@ -243,6 +248,9 @@ namespace IoTDataReceiver
             SetupWindow w = new SetupWindow(dataReceiver);
             w.Owner = this;
             w.ShowDialog();
+
+            if (!w.EraseAndSetup) // if the user cancelled, terminate
+                return; 
 
             string username = w.Username;
 
