@@ -94,6 +94,7 @@
     <Compile Include="IDataConnector.cs" />
     <Compile Include="IDataReceiver.cs" />
     <Compile Include="IObserver.cs" />
+    <Compile Include="ISettingsDao.cs" />
     <Compile Include="IPatientDao.cs" />
     <Compile Include="MyExceptions.cs" />
     <Compile Include="PatientFileDao.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="MyClasses.cs" />
     <Compile Include="PatientService.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="SettingsDao.cs" />
     <Compile Include="SettingsService.cs" />
     <Compile Include="SetupWindow.xaml.cs">
       <DependentUpon>SetupWindow.xaml</DependentUpon>
