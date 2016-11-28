@@ -7,9 +7,9 @@
         mc:Ignorable="d"
         Title="Smart Watch" Height="534.432" Width="869.373" Loaded="Window_Loaded">
     <Window.Resources>
-        <!--l:ProgressBarConverter x:Key="converter" /-->
+        <l:IndeterminateProgressConverter x:Key="indeterminateConverter" /> 
 
-        <DataTemplate x:Key="FullDataTemplate">
+        <DataTemplate x:Key="ConnectedDeviceTemplate">
             <Border Margin="5" BorderThickness="0" Background="Transparent" Padding="10">
                 <Grid Margin="0">
                     <Grid.RowDefinitions>
@@ -20,25 +20,27 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding Path=PatientName}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=BatteryLevel, Mode=OneWay}"/>
-                    <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0" Height="5" Value="{Binding Path=BatteryLevel, Mode=OneWay}" Minimum="0" Maximum="100"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding Path=DeviceInfo.PatientName, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=DeviceInfo.BatteryLevel, Mode=OneWay}"/>
+                    <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0" Height="5" Value="{Binding Path=Progress, Mode=OneWay}" Minimum="0" Maximum="100" IsIndeterminate="{Binding Path=Progress, Mode=OneWay, Converter={StaticResource indeterminateConverter}}"/>
                 </Grid>
             </Border>
         </DataTemplate>
 
-        <DataTemplate x:Key="EmptyDataTemplate">
-            <Border Margin="5" BorderThickness="0" Padding="10">
+        <DataTemplate x:Key="DisconnectedDeviceTemplate">
+            <Border Margin="5" BorderThickness="0" Background="Red" Padding="10">
                 <Grid Margin="0">
                     <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="{Binding Path=PatientName}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="{Binding Path=DeviceInfo.PatientName}"/>
                     <TextBlock Grid.Row="0" Grid.Column="1" Text="---"/>
+                    <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0" Height="5" Value="{Binding Path=Progress, Mode=OneWay}" Minimum="0" Maximum="100" IsIndeterminate="{Binding Path=Progress, Mode=OneWay, Converter={StaticResource indeterminateConverter}}"/>
                 </Grid>
             </Border>
         </DataTemplate>
@@ -47,15 +49,15 @@
     <Grid>
         <Button x:Name="btnShowData" Content="Show data" HorizontalAlignment="Left" Margin="10,444,0,0" VerticalAlignment="Top" Width="200" Height="49" Click="btnShowData_Click"/>
         <ListBox x:Name="listBoxWatches" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" Height="429" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="listBoxWatches_SelectionChanged"/>
-        <StackPanel x:Name="watchPanel" HorizontalAlignment="Left" Height="483" Margin="215,10,0,0" VerticalAlignment="Top" Width="636">
-            <Label x:Name="label" Content="{Binding Path=PatientName}" Margin="0,50,0,0" FontSize="24" HorizontalAlignment="Center" />
+        <StackPanel x:Name="devicePanel" HorizontalAlignment="Left" Height="483" Margin="215,10,0,0" VerticalAlignment="Top" Width="636">
+            <Label x:Name="label" Content="{Binding Path=DeviceInfo.PatientName, FallbackValue='Please insert a watch', Mode=OneWay}" Margin="0,50,0,0" FontSize="24" HorizontalAlignment="Center" />
 
             <Button x:Name="btnGet" Content="Get data" Width="250" Height="40" Margin="0,40,0,0" Click="btnGet_Click"/>
             <Button x:Name="btnProcess" Content="Process data" Width="250" Height="40" Margin="0,20,0,0" Click="btnProcess_Click"/>
             <Button x:Name="btnUpload" Content="Upload data" Width="250" Height="40" Margin="0,20,0,0" Click="btnUpload_Click"/>
             <Button x:Name="btnClear" Content="Clear &amp; setup watch" Margin="0,20,0,0" Width="250" Height="40" Click="btnClear_Click"/>
-            
-            <ProgressBar x:Name="progressBar" Margin="50,40,50,0" Height="40" Minimum="0" Maximum="100" Value="{Binding Path=BatteryLevel, Mode=OneWay}"/>
+
+            <ProgressBar x:Name="progressBar" Margin="50,40,50,0" Height="40" Minimum="0" Maximum="100" Value="{Binding Path=Progress, Mode=OneWay}" IsIndeterminate="{Binding Path=Progress, Mode=OneWay, Converter={StaticResource indeterminateConverter}}"/>
 
         </StackPanel>
 

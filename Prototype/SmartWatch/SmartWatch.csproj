@@ -89,6 +89,7 @@
     <Compile Include="DataWindow.xaml.cs">
       <DependentUpon>DataWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DummyDataConnector.cs" />
     <Compile Include="GeneActivDataConnector.cs" />
     <Compile Include="HowRYouConnector.cs" />
     <Compile Include="IDataConnector.cs" />

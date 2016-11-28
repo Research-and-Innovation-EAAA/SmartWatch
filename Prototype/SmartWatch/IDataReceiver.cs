@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static IoTDataReceiver.DataReceiver;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
@@ -14,17 +15,17 @@ namespace IoTDataReceiver
 
         void GetData(Guid deviceId);
 
-        void ProcessData();
+        void ProcessData(Guid deviceId);
 
-        void SendData();
+        void SendData(Guid deviceId);
 
         void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings);
 
-        ObservableCollection<ListViewDeviceItem> GetConnectedDevices();
+        ObservableCollection<DeviceReceiver> GetAvailableDevices();
 
         event ProgressUpdateHandler ProgressUpdate;
 
-        DataProcessStep CurrentStep { get; }
+        DataProcessStep? GetCurrentStep(Guid deviceId);
 
     }
 }

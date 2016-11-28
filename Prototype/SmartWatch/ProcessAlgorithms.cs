@@ -22,9 +22,9 @@ namespace IoTDataReceiver
 
 
     /// <summary>
-    /// Dummy algorithm that calculates average every 1000th record
+    /// Algorithm that calculates average every 1000th record
     /// </summary>
-    class DummyAlgorithm : IProcessAlgorithm
+    class SimpleAlgorithm : IProcessAlgorithm
     {
         public event ProgressUpdateHandler ProgressUpdate;
 
@@ -152,6 +152,33 @@ namespace IoTDataReceiver
             {
                 return timestamp.ToString() + " " + G + ", " + L + ", " + B + ", " + T + " °C";
             }
+        }
+    }
+
+
+    /// <summary>
+    /// Dummy algorithm that simulates calculations
+    /// </summary>
+    class DummyAlgorithm : IProcessAlgorithm
+    {
+        public event ProgressUpdateHandler ProgressUpdate;
+
+        protected virtual void OnProgressUpdate(int progress)
+        {
+            ProgressUpdateHandler handler = ProgressUpdate;
+            if (handler != null) handler(progress);
+        }
+
+        public string ProcessDataFromFile(string path)
+        {
+
+            for (int i = 0; i <= 30; i++) // wait loop simulating reading data
+            {
+                System.Threading.Thread.Sleep(500);
+                OnProgressUpdate((int)(i / 30f * 100));
+            }
+            
+            return "";
         }
     }
 }

@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -88,12 +87,13 @@ namespace IoTDataReceiver
                 {
                     throw new MyExceptions.CommunicationException();
                 }
-                finally {
+                finally
+                {
                     filer.CloseFile();
                     filer.WriteDataProgress -= this.OnExtractProgress;
                 }
 
-                    return fileName;
+                return fileName;
             }
         }
 
@@ -107,7 +107,7 @@ namespace IoTDataReceiver
 
         private Dictionary<Guid, IGeneaDevice> smartWatches = new Dictionary<Guid, IGeneaDevice>();
 
-        private ObservableCollection<ListViewDeviceItem> devices;
+        private ObservableCollection<ListViewDeviceItem> devices = null;
 
         public event ProgressUpdateHandler ProgressUpdate;
         protected virtual void OnProgressUpdate(int progress)
@@ -134,16 +134,17 @@ namespace IoTDataReceiver
             AddGeneaDevice(e.GeneaDevice);
         }
 
-        private void runOnMain(Action function)
-        {
-            Application.Current.Dispatcher.Invoke(function);
-        }
+        /*    private void runOnMain(Action function)
+            {
+                Application.Current.Dispatcher.Invoke(function);
+            }*/
 
         private void AddGeneaDevice(IGeneaDevice device)
         {
             // New entry for list control data source with default streaming options
 
-            runOnMain(() => { devices.Add(new ListViewDeviceItem { DeviceId = device.GeneaDeviceID, PatientName = device.SubjectInfo.SubjectCode }); });
+            /*            runOnMain(() => { devices.Add(new ListViewDeviceItem { DeviceId = device.GeneaDeviceID, PatientName = device.SubjectInfo.SubjectCode }); });*/
+            devices.Add(new ListViewDeviceItem { DeviceId = device.GeneaDeviceID, PatientName = device.SubjectInfo.SubjectCode });
 
             device.StatusUpdate += OnLiveDeviceStatusUpdate;
             device.DeviceSetupUpdate += OnLiveDeviceSetupUpdate;
@@ -155,7 +156,8 @@ namespace IoTDataReceiver
 
         private void OnGeneaDeviceRemoved(object sender, GeneaDeviceRemovedEventArgs e)
         {
-            runOnMain(() => RemoveGeneaDevice(e.GeneaDeviceID));
+            //            runOnMain(() => RemoveGeneaDevice(e.GeneaDeviceID));
+            RemoveGeneaDevice(e.GeneaDeviceID);
         }
 
         private void RemoveGeneaDevice(Guid deviceID)
@@ -224,7 +226,8 @@ namespace IoTDataReceiver
             try
             {
                 device.SetupDevice(deviceConfigInfo, deviceSubjectInfo, deviceTrialInfo, true);
-            }catch(GeneaDeviceException ex)
+            }
+            catch (GeneaDeviceException ex)
             {
                 throw new MyExceptions.DeviceException(ex.Message);
             }

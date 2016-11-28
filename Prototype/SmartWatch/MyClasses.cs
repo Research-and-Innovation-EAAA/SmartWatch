@@ -1,8 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using static IoTDataReceiver.DataReceiver;
 
 namespace IoTDataReceiver
 {
@@ -26,44 +28,64 @@ namespace IoTDataReceiver
             }
             */
 
-        public class WatchTemplateSelector : DataTemplateSelector
+        public class DeviceTemplateSelector : DataTemplateSelector
         {
             public override DataTemplate SelectTemplate(object item, DependencyObject container)
             {
-                ListViewDeviceItem watch = ((ListViewDeviceItem)item);
+                DeviceReceiver watch = ((DeviceReceiver)item);
 
                 Window window = Application.Current.MainWindow;
 
                 /*   if (watch.Data > 0)
                    {*/
-                return (DataTemplate)window.FindResource("FullDataTemplate");
+                return (DataTemplate)window.FindResource("ConnectedDeviceTemplate");
                 /*  }
                   else
                   {
-                      return (DataTemplate)window.FindResource("EmptyDataTemplate");
+                      return (DataTemplate)window.FindResource("DisconnectedDeviceTemplate");
                   }*/
             }
         }
 
-        public class EnabledStepConverter : IValueConverter
+        
+
+        public class MyBackgroundWorker : BackgroundWorker
         {
 
-            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            {
-                if (value is DataProcessStep && parameter != null && parameter is DataProcessStep)
-                {
-                    if ((DataProcessStep)parameter == DataProcessStep.DataUploaded)
-                        return true; // allow setting up at all times
+        }
+    }
 
-                    return (DataProcessStep)value == (DataProcessStep) parameter;
-                }
-                else return null;
-            }
-
-            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public class EnabledStepConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is DataProcessStep && parameter != null && parameter is DataProcessStep)
             {
-                throw new NotImplementedException();
+                if ((DataProcessStep)parameter == DataProcessStep.DataUploaded)
+                    return true; // allow setting up at all times
+
+                return (DataProcessStep)value == (DataProcessStep)parameter;
             }
+            else return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class IndeterminateProgressConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            int val = (int)value;
+            return val == -1;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

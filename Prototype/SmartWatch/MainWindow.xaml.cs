@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using static IoTDataReceiver.DataReceiver;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
@@ -22,49 +23,55 @@ namespace IoTDataReceiver
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            listBoxWatches.ItemsSource = dataReceiver.GetConnectedDevices();
-            listBoxWatches.ItemTemplateSelector = new WatchTemplateSelector();
+            listBoxWatches.ItemsSource = dataReceiver.GetAvailableDevices();
+            listBoxWatches.ItemTemplateSelector = new DeviceTemplateSelector();
 
             BindingOperations.SetBinding(btnGet, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
-                Source = this.dataReceiver,
+                //         Source = this.dataReceiver,
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                FallbackValue = false,
                 Converter = new EnabledStepConverter(),
-                ConverterParameter = DataProcessStep.WatchInserted // <-- when to be enabled
+                ConverterParameter = DataProcessStep.DeviceInserted // <-- when to be enabled
             });
 
             BindingOperations.SetBinding(btnProcess, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
-                Source = this.dataReceiver,
+                //             Source = this.dataReceiver,
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                FallbackValue = false,
                 Converter = new EnabledStepConverter(),
                 ConverterParameter = DataProcessStep.DataDownloaded // <-- when to be enabled
             });
 
             BindingOperations.SetBinding(btnUpload, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
-                Source = this.dataReceiver,
+                //          Source = this.dataReceiver,
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                FallbackValue = false,
                 Converter = new EnabledStepConverter(),
                 ConverterParameter = DataProcessStep.DataProcessed // <-- when to be enabled
             });
 
             BindingOperations.SetBinding(btnClear, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
-                Source = this.dataReceiver,
+                //           Source = this.dataReceiver,
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                FallbackValue = false,
                 Converter = new EnabledStepConverter(),
                 ConverterParameter = DataProcessStep.DataUploaded // <-- when to be enabled
             });
         }
+
+        
 
         private void btnSet_Click(object sender, RoutedEventArgs e)
         {
@@ -80,7 +87,7 @@ namespace IoTDataReceiver
 
         private void listBoxWatches_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            watchPanel.DataContext = listBoxWatches.SelectedItem;
+            devicePanel.DataContext = listBoxWatches.SelectedItem;
         }
 
         // --------------------------------------- GET ---------------------------------------
@@ -88,15 +95,16 @@ namespace IoTDataReceiver
         {
             if (listBoxWatches.SelectedItem == null) return;
 
-            Guid deviceId = ((ListViewDeviceItem)listBoxWatches.SelectedItem).DeviceId;
+            Guid deviceId = ((DeviceReceiver)listBoxWatches.SelectedItem).DeviceId;
 
-            BackgroundWorker worker = new BackgroundWorker();
+            BackgroundWorker worker = new MyBackgroundWorker();
             worker.DoWork += workerGet_DoWork;
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerGet_RunWorkerCompleted;
+           
 
             worker.WorkerSupportsCancellation = false; // TODO cancel???
-            worker.WorkerReportsProgress = true;
+            worker.WorkerReportsProgress = false;
             worker.RunWorkerAsync(deviceId);
         }
 
@@ -114,12 +122,12 @@ namespace IoTDataReceiver
             }
             catch (MyExceptions.NoDataException ex)
             {
-                this.worker.ReportProgress(0);
+  //              this.worker.ReportProgress(0);
                 MessageBox.Show("This smart watch does not contain any data.\n" + ex.Message);
             }
             catch (MyExceptions.CommunicationException ex)
             {
-                this.worker.ReportProgress(0);
+    //            this.worker.ReportProgress(0);
                 MessageBox.Show("Error reading data.\n" + ex.Message);
             }
             finally
@@ -134,10 +142,10 @@ namespace IoTDataReceiver
 
         void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            int nr = e.ProgressPercentage;
+   /*         int nr = e.ProgressPercentage;
             Debug.WriteLine(nr);
             progressBar.IsIndeterminate = nr == -1;
-            progressBar.Value = nr;
+            progressBar.Value = nr;*/
         }
 
         void workerGet_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -155,25 +163,27 @@ namespace IoTDataReceiver
         {
             if (listBoxWatches.SelectedItem == null) return;
 
+            Guid deviceId = ((DeviceReceiver)listBoxWatches.SelectedItem).DeviceId;
+
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerProcess_DoWork;
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerProcess_RunWorkerCompleted;
 
             worker.WorkerSupportsCancellation = false; // TODO cancel???
-            worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync();
+            worker.WorkerReportsProgress = false;
+            worker.RunWorkerAsync(deviceId);
         }
 
 
         void workerProcess_DoWork(object sender, DoWorkEventArgs e)
         {
-            //   Guid deviceId = (Guid)e.Argument;
+            Guid deviceId = (Guid)e.Argument;
 
             dataReceiver.ProgressUpdate += Notify;
             this.worker = (BackgroundWorker)sender;
 
-            dataReceiver.ProcessData();
+            dataReceiver.ProcessData(deviceId);
             Debug.Write("DONE");
 
             dataReceiver.ProgressUpdate -= Notify;
@@ -191,42 +201,44 @@ namespace IoTDataReceiver
         {
             if (listBoxWatches.SelectedItem == null) return;
 
+            Guid deviceId = ((DeviceReceiver)listBoxWatches.SelectedItem).DeviceId;
+
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerSend_DoWork;
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerSend_RunWorkerCompleted;
 
             worker.WorkerSupportsCancellation = false; // TODO cancel???
-            worker.WorkerReportsProgress = true;
-            worker.RunWorkerAsync();
+            worker.WorkerReportsProgress = false;
+            worker.RunWorkerAsync(deviceId);
         }
 
 
         void workerSend_DoWork(object sender, DoWorkEventArgs e)
         {
-            //   Guid deviceId = (Guid)e.Argument;
+            Guid deviceId = (Guid)e.Argument;
 
-            dataReceiver.ProgressUpdate += Notify;
-            this.worker = (BackgroundWorker)sender;
+     //       dataReceiver.ProgressUpdate += Notify;
+     //       this.worker = (BackgroundWorker)sender;
 
             try
             {
-                dataReceiver.SendData();
+                dataReceiver.SendData(deviceId);
             }
             catch (MyExceptions.UnauthorizedException ex)
             {
-                this.worker.ReportProgress(0);
+      //          this.worker.ReportProgress(0);
                 MessageBox.Show("Wrong password for the patient, cannot log in.\n" + ex.Message);
             }
             catch (MyExceptions.UnknownPatientException ex)
             {
-                this.worker.ReportProgress(0);
+                //this.worker.ReportProgress(0);
                 MessageBox.Show("Unknown patient, cannot find information.\n" + ex.Message);
             }
             finally
             {
-                dataReceiver.ProgressUpdate -= Notify;
-                this.worker = null;
+       //         dataReceiver.ProgressUpdate -= Notify;
+     //           this.worker = null;
             }
 
             Debug.Write("DONE");
@@ -243,14 +255,14 @@ namespace IoTDataReceiver
         {
             if (listBoxWatches.SelectedItem == null) return;
 
-            Guid deviceId = ((ListViewDeviceItem)listBoxWatches.SelectedItem).DeviceId;
+            Guid deviceId = ((DeviceReceiver)listBoxWatches.SelectedItem).DeviceId;
 
             SetupWindow w = new SetupWindow(dataReceiver);
             w.Owner = this;
             w.ShowDialog();
 
             if (!w.EraseAndSetup) // if the user cancelled, terminate
-                return; 
+                return;
 
             string username = w.Username;
 
@@ -262,7 +274,7 @@ namespace IoTDataReceiver
             worker.RunWorkerCompleted += workerClear_RunWorkerCompleted;
 
             worker.WorkerSupportsCancellation = false; // TODO cancel???
-            worker.WorkerReportsProgress = true;
+            worker.WorkerReportsProgress = false;
             worker.RunWorkerAsync(args);
 
         }
@@ -273,8 +285,8 @@ namespace IoTDataReceiver
             Guid deviceId = (Guid)args[0];
             string username = (string)args[1];
 
-            dataReceiver.ProgressUpdate += Notify;
-            this.worker = (BackgroundWorker)sender;
+         //   dataReceiver.ProgressUpdate += Notify;
+      //      this.worker = (BackgroundWorker)sender;
 
             try
             {
@@ -287,8 +299,8 @@ namespace IoTDataReceiver
             }
             finally
             {
-                dataReceiver.ProgressUpdate -= Notify;
-                this.worker = null;
+   //             dataReceiver.ProgressUpdate -= Notify;
+ //               this.worker = null;
             }
 
 
@@ -306,7 +318,7 @@ namespace IoTDataReceiver
 
         public void Notify(int progress)
         {
-            worker.ReportProgress(progress);
+  //          worker.ReportProgress(progress);
         }
     }
 }

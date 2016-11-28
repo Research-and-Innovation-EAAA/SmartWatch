@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IoTDataReceiver
+﻿namespace IoTDataReceiver
 {
     public enum DataProcessStep
     {
-        WatchInserted = 0,
+        Processing = -1,
+        DeviceInserted = 0,
         DataDownloaded = 1,
         DataProcessed = 2,
         DataUploaded = 3,
-        WatchCleared = 4
+        DeviceCleared = 4
     }
 }
