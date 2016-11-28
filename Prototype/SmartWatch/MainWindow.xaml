@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Smart Watch" Height="534.432" Width="869.373" Loaded="Window_Loaded">
     <Window.Resources>
-        <l:IndeterminateProgressConverter x:Key="indeterminateConverter" /> 
+        <l:IndeterminateProgressConverter x:Key="indeterminateConverter" />
 
         <DataTemplate x:Key="ConnectedDeviceTemplate">
             <Border Margin="5" BorderThickness="0" Background="Transparent" Padding="10">
@@ -21,14 +21,14 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding Path=DeviceInfo.PatientName, Mode=OneWay}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Connected, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=DeviceInfo.BatteryLevel, Mode=OneWay}" HorizontalAlignment="Right" />
                     <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0" Height="5" Value="{Binding Path=Progress, Mode=OneWay}" Minimum="0" Maximum="100" IsIndeterminate="{Binding Path=Progress, Mode=OneWay, Converter={StaticResource indeterminateConverter}}"/>
                 </Grid>
             </Border>
         </DataTemplate>
 
         <DataTemplate x:Key="DisconnectedDeviceTemplate">
-            <Border Margin="5" BorderThickness="2" Background="Red" Padding="10">
+            <Border Margin="5" BorderThickness="0" Padding="10">
                 <Grid Margin="0">
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
@@ -39,7 +39,7 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="{Binding Path=DeviceInfo.PatientName}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="---"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="disconnected" Foreground="Red" HorizontalAlignment="Right" />
                     <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0" Height="5" Value="{Binding Path=Progress, Mode=OneWay}" Minimum="0" Maximum="100" IsIndeterminate="{Binding Path=Progress, Mode=OneWay, Converter={StaticResource indeterminateConverter}}"/>
                 </Grid>
             </Border>
@@ -48,7 +48,19 @@
 
     <Grid>
         <Button x:Name="btnShowData" Content="Show data" HorizontalAlignment="Left" Margin="10,444,0,0" VerticalAlignment="Top" Width="200" Height="49" Click="btnShowData_Click"/>
-        <ListBox x:Name="listBoxWatches" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" Height="429" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="listBoxWatches_SelectionChanged"/>
+        <ListBox x:Name="listBoxDevices" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" Height="429" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="listBoxWatches_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl x:Name="cc" Content="{Binding}" ContentTemplate="{DynamicResource ConnectedDeviceTemplate}"/>
+
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=Connected}" Value="False">
+                            <Setter TargetName="cc" Property="ContentTemplate" Value="{DynamicResource DisconnectedDeviceTemplate}" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <StackPanel x:Name="devicePanel" HorizontalAlignment="Left" Height="483" Margin="215,10,0,0" VerticalAlignment="Top" Width="636">
             <Label x:Name="label" Content="{Binding Path=DeviceInfo.PatientName, FallbackValue='Please insert a watch', Mode=OneWay}" Margin="0,50,0,0" FontSize="24" HorizontalAlignment="Center" />
 

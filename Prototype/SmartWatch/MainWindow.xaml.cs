@@ -23,8 +23,8 @@ namespace IoTDataReceiver
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            listBoxWatches.ItemsSource = dataReceiver.GetAvailableDevices();
-            listBoxWatches.ItemTemplateSelector = new DeviceTemplateSelector();
+            listBoxDevices.ItemsSource = dataReceiver.GetAvailableDevices();
+     //       listBoxDevices.ItemTemplateSelector = new DeviceTemplateSelector();
 
             BindingOperations.SetBinding(btnGet, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
@@ -87,15 +87,15 @@ namespace IoTDataReceiver
 
         private void listBoxWatches_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            devicePanel.DataContext = listBoxWatches.SelectedItem;
+            devicePanel.DataContext = listBoxDevices.SelectedItem;
         }
 
         // --------------------------------------- GET ---------------------------------------
         private void btnGet_Click(object sender, RoutedEventArgs e)
         {
-            if (listBoxWatches.SelectedItem == null) return;
+            if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((DeviceReceiver)listBoxWatches.SelectedItem).DeviceId;
+            Guid deviceId = ((DeviceReceiver)listBoxDevices.SelectedItem).DeviceId;
 
             BackgroundWorker worker = new MyBackgroundWorker();
             worker.DoWork += workerGet_DoWork;
@@ -161,9 +161,9 @@ namespace IoTDataReceiver
         // --------------------------------------- PROCESS ---------------------------------------
         private void btnProcess_Click(object sender, RoutedEventArgs e)
         {
-            if (listBoxWatches.SelectedItem == null) return;
+            if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((DeviceReceiver)listBoxWatches.SelectedItem).DeviceId;
+            Guid deviceId = ((DeviceReceiver)listBoxDevices.SelectedItem).DeviceId;
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerProcess_DoWork;
@@ -199,9 +199,9 @@ namespace IoTDataReceiver
         // --------------------------------------- UPLOAD ---------------------------------------
         private void btnUpload_Click(object sender, RoutedEventArgs e)
         {
-            if (listBoxWatches.SelectedItem == null) return;
+            if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((DeviceReceiver)listBoxWatches.SelectedItem).DeviceId;
+            Guid deviceId = ((DeviceReceiver)listBoxDevices.SelectedItem).DeviceId;
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerSend_DoWork;
@@ -253,9 +253,9 @@ namespace IoTDataReceiver
         // --------------------------------------- CLEAR&SETUP ---------------------------------------
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            if (listBoxWatches.SelectedItem == null) return;
+            if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((DeviceReceiver)listBoxWatches.SelectedItem).DeviceId;
+            Guid deviceId = ((DeviceReceiver)listBoxDevices.SelectedItem).DeviceId;
 
             SetupWindow w = new SetupWindow(dataReceiver);
             w.Owner = this;

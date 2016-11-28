@@ -98,6 +98,7 @@ namespace IoTDataReceiver
             DeviceReceiver device = FindDevice(deviceId);
             if (device == null) return;
             if (device.CurrentStep != DataProcessStep.DeviceInserted) return;
+            if (!device.Connected) return;
 
             // Determine whether the directory exists
             if (Directory.Exists(PATH))
@@ -202,6 +203,7 @@ namespace IoTDataReceiver
             DeviceReceiver device = FindDevice(deviceId);
             if (device == null) return;
             //  if (currentStep != DataProcessStep.DataUploaded) return;
+            if (!device.Connected) return;
 
             device.Notify(-1, deviceId);
             //          OnProgressUpdate(-1);
