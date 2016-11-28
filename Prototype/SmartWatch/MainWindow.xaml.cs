@@ -113,8 +113,8 @@ namespace IoTDataReceiver
         {
             Guid deviceId = (Guid)e.Argument;
 
-            dataReceiver.ProgressUpdate += Notify;
-            this.worker = (BackgroundWorker)sender;
+  //          dataReceiver.ProgressUpdate += Notify;
+   //         this.worker = (BackgroundWorker)sender;
 
             try
             {
@@ -132,8 +132,8 @@ namespace IoTDataReceiver
             }
             finally
             {
-                dataReceiver.ProgressUpdate -= Notify;
-                this.worker = null;
+   //             dataReceiver.ProgressUpdate -= Notify;
+  //              this.worker = null;
             }
             Debug.Write("DONE");
 
@@ -180,13 +180,13 @@ namespace IoTDataReceiver
         {
             Guid deviceId = (Guid)e.Argument;
 
-            dataReceiver.ProgressUpdate += Notify;
+  //          dataReceiver.ProgressUpdate += Notify;
             this.worker = (BackgroundWorker)sender;
 
             dataReceiver.ProcessData(deviceId);
             Debug.Write("DONE");
 
-            dataReceiver.ProgressUpdate -= Notify;
+     //       dataReceiver.ProgressUpdate -= Notify;
             this.worker = null;
         }
 

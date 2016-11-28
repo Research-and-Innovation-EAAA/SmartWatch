@@ -11,6 +11,7 @@ namespace IoTDataReceiver
     public class MyClasses
     {
 
+        public delegate void DeviceProgressUpdateHandler(int percent, Guid deviceId);
         public delegate void ProgressUpdateHandler(int percent);
 
         /*    public struct Settings
@@ -32,22 +33,22 @@ namespace IoTDataReceiver
         {
             public override DataTemplate SelectTemplate(object item, DependencyObject container)
             {
-                DeviceReceiver watch = ((DeviceReceiver)item);
+                DeviceReceiver device = ((DeviceReceiver)item);
 
                 Window window = Application.Current.MainWindow;
 
-                /*   if (watch.Data > 0)
-                   {*/
-                return (DataTemplate)window.FindResource("ConnectedDeviceTemplate");
-                /*  }
-                  else
-                  {
-                      return (DataTemplate)window.FindResource("DisconnectedDeviceTemplate");
-                  }*/
+                if (device.Connected)
+                {
+                    return (DataTemplate)window.FindResource("ConnectedDeviceTemplate");
+                }
+                else
+                {
+                    return (DataTemplate)window.FindResource("DisconnectedDeviceTemplate");
+                }
             }
         }
 
-        
+
 
         public class MyBackgroundWorker : BackgroundWorker
         {

@@ -15,9 +15,9 @@ namespace IoTDataReceiver
         /// </summary>
         /// <param name="path">Path to a CSV file to process</param>
         /// <returns>JSON string with a timestamp and computed data values</returns>
-        string ProcessDataFromFile(string path);
+        string ProcessDataFromFile(string path, Guid deviceId);
 
-        event ProgressUpdateHandler ProgressUpdate;
+        event DeviceProgressUpdateHandler ProgressUpdate;
     }
 
 
@@ -26,15 +26,15 @@ namespace IoTDataReceiver
     /// </summary>
     class SimpleAlgorithm : IProcessAlgorithm
     {
-        public event ProgressUpdateHandler ProgressUpdate;
+        public event DeviceProgressUpdateHandler ProgressUpdate;
 
-        protected virtual void OnProgressUpdate(int progress)
+        protected virtual void OnProgressUpdate(int progress, Guid deviceId)
         {
-            ProgressUpdateHandler handler = ProgressUpdate;
-            if (handler != null) handler(progress);
+            DeviceProgressUpdateHandler handler = ProgressUpdate;
+            if (handler != null) handler(progress, deviceId);
         }
 
-        public string ProcessDataFromFile(string path)
+        public string ProcessDataFromFile(string path, Guid deviceId)
         {
             int totalLines = this.CountLines(path);
 
@@ -103,7 +103,7 @@ namespace IoTDataReceiver
 
                 listData.Add(row2);
 
-                OnProgressUpdate((int)(((double)lineNumber) / totalLines * 100f));
+                OnProgressUpdate((int)(((double)lineNumber) / totalLines * 100f), deviceId);
 
                 avgActivity = 0;
                 avgTemperature = 0;
@@ -161,23 +161,24 @@ namespace IoTDataReceiver
     /// </summary>
     class DummyAlgorithm : IProcessAlgorithm
     {
-        public event ProgressUpdateHandler ProgressUpdate;
+        public event DeviceProgressUpdateHandler ProgressUpdate;
 
-        protected virtual void OnProgressUpdate(int progress)
+        protected virtual void OnProgressUpdate(int progress, Guid deviceId)
         {
-            ProgressUpdateHandler handler = ProgressUpdate;
-            if (handler != null) handler(progress);
+            DeviceProgressUpdateHandler handler = ProgressUpdate;
+            if (handler != null) handler(progress, deviceId);
         }
 
-        public string ProcessDataFromFile(string path)
+        public string ProcessDataFromFile(string path, Guid deviceId)
         {
 
             for (int i = 0; i <= 30; i++) // wait loop simulating reading data
             {
                 System.Threading.Thread.Sleep(500);
-                OnProgressUpdate((int)(i / 30f * 100));
+                OnProgressUpdate((int)(i / 30f * 100), deviceId);
             }
-            
+
+
             return "";
         }
     }

@@ -14,19 +14,30 @@ namespace IoTDataReceiver
 {
     class DummyDataConnector : IDataConnector
     {
+        private static DummyDataConnector instance = null;
+        public static DummyDataConnector Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new DummyDataConnector();
+                return instance;
+            }
+        }
 
-        public DummyDataConnector()
+        private DummyDataConnector()
         {
             devices = new ObservableCollection<ListViewDeviceItem>();
 
             Task.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(5));
-                devices.Add(new ListViewDeviceItem
+                ListViewDeviceItem pepik = new ListViewDeviceItem
                 {
                     DeviceId = Guid.NewGuid(),
                     PatientName = "Pepik"
-                });
+                };
+                devices.Add(pepik);
 
                 devices.Add(new ListViewDeviceItem
                 {
@@ -43,6 +54,11 @@ namespace IoTDataReceiver
                          PatientName = "Monika"
                      });
                  });
+                await Task.Run(async () =>
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(20));
+                    devices.Remove(pepik);
+                });
             });
         }
 
@@ -51,7 +67,7 @@ namespace IoTDataReceiver
             for (int i = 0; i <= 30; i++) // wait loop simulating reading data
             {
                 System.Threading.Thread.Sleep(500);
-                OnProgressUpdate((int)(i / 30f * 100));
+                OnProgressUpdate((int)(i / 30f * 100), deviceId);
             }
 
             DateTime startTime = DateTime.Now;
@@ -84,16 +100,16 @@ namespace IoTDataReceiver
             for (int i = 0; i <= 10; i++) // wait loop simulating setting up
             {
                 System.Threading.Thread.Sleep(500);
-                OnProgressUpdate((int)(i / 10f * 100));
+                OnProgressUpdate((int)(i / 10f * 100), deviceId);
             }
         }
 
 
-        public event ProgressUpdateHandler ProgressUpdate;
-        protected virtual void OnProgressUpdate(int progress)
+        public event DeviceProgressUpdateHandler ProgressUpdate;
+        protected virtual void OnProgressUpdate(int progress, Guid deviceId)
         {
-            ProgressUpdateHandler handler = ProgressUpdate;
-            if (handler != null) handler(progress);
+            DeviceProgressUpdateHandler handler = ProgressUpdate;
+            if (handler != null) handler(progress, deviceId);
         }
     }
 }

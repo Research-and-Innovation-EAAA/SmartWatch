@@ -20,7 +20,7 @@ namespace IoTDataReceiver
         /// <returns>Path to created CSV file, beware of the naming requirement!</returns>
         string DownloadData(Guid deviceId, string path);
         
-        event ProgressUpdateHandler ProgressUpdate;
+        event DeviceProgressUpdateHandler ProgressUpdate;
 
         void SetupDevice(Guid deviceId, string username, Dictionary<string, string> settings);
 

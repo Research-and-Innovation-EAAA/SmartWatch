@@ -23,9 +23,7 @@ namespace IoTDataReceiver
 
         ObservableCollection<DeviceReceiver> GetAvailableDevices();
 
-        event ProgressUpdateHandler ProgressUpdate;
-
-        DataProcessStep? GetCurrentStep(Guid deviceId);
+        DataProcessStep GetCurrentStep(Guid deviceId);
 
     }
 }

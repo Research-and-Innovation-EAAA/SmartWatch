@@ -8,8 +8,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
 using static IoTDataReceiver.MyClasses;
 
@@ -17,8 +15,18 @@ namespace IoTDataReceiver
 {
     class GeneActivDataConnector : IDataConnector
     {
+        private static GeneActivDataConnector instance = null;
+        public static GeneActivDataConnector Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new GeneActivDataConnector();
+                return instance;
+            }
+        }
 
-        public GeneActivDataConnector()
+        private GeneActivDataConnector()
         {
             Logger.AddLogger(new DebugLogger()); // can also log to Windows debug log
 
@@ -99,8 +107,9 @@ namespace IoTDataReceiver
 
         private void OnExtractProgress(object sender, GeneaDeviceFilerProgressEventArgs e)
         {
+            //TODO does sender contain deviceId????
             int progress = (int)(100 * ((double)e.NumOfDataBlocks / (double)e.TotalDataBlocks));
-            OnProgressUpdate(progress);
+            OnProgressUpdate(progress, new Guid());
         }
 
         private GeneaDeviceManager manager = new GeneaDeviceManager();
@@ -109,11 +118,11 @@ namespace IoTDataReceiver
 
         private ObservableCollection<ListViewDeviceItem> devices = null;
 
-        public event ProgressUpdateHandler ProgressUpdate;
-        protected virtual void OnProgressUpdate(int progress)
+        public event DeviceProgressUpdateHandler ProgressUpdate;
+        protected virtual void OnProgressUpdate(int progress, Guid deviceId)
         {
-            ProgressUpdateHandler handler = ProgressUpdate;
-            if (handler != null) handler(progress);
+            DeviceProgressUpdateHandler handler = ProgressUpdate;
+            if (handler != null) handler(progress, deviceId);
         }
 
         public ObservableCollection<ListViewDeviceItem> GetConnectedDevices() { return devices; }

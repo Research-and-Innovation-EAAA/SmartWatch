@@ -8,7 +8,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Windows;
-using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
@@ -33,7 +32,7 @@ namespace IoTDataReceiver
 
         private DataReceiver()
         {
-            this.dataConnector = new DummyDataConnector(); //new GeneActivDataConnector();
+            this.dataConnector = DummyDataConnector.Instance; //new GeneActivDataConnector();
             this.algorithm = new DummyAlgorithm();
             this.patients = PatientService.Instance;
             this.howRYou = HowRYouConnector.Instance;
@@ -55,9 +54,23 @@ namespace IoTDataReceiver
                 {
                     ListViewDeviceItem newDevice = (ListViewDeviceItem)v;
                     Debug.WriteLine("adding!!!!");
-                    var rec = new DeviceReceiver(this, newDevice.DeviceId, newDevice);
+                    var rec = new DeviceReceiver(newDevice.DeviceId, newDevice);
+                    rec.Connected = true;
                     runOnMain(() => availableDevices.Add(rec));
                     Debug.WriteLine("adding!!!!DONE");
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (var v in e.OldItems)
+                {
+                    ListViewDeviceItem oldDevice = (ListViewDeviceItem)v;
+                    Debug.WriteLine("removing!!!!");
+                    runOnMain(() =>
+                    {
+                        FindDevice(oldDevice.DeviceId).Connected = false;
+                    });
+                    Debug.WriteLine("removing!!!!DONE");
                 }
             }
         }
@@ -77,9 +90,7 @@ namespace IoTDataReceiver
         }
 
         const string PATH = @"c:\SmartWatch\realtest\";
-        private string pathCsv, pathZip;
-        private string viewData;
-        private string username, date;
+
 
 
         public void GetData(Guid deviceId)
@@ -108,14 +119,14 @@ namespace IoTDataReceiver
             Directory.CreateDirectory(PATH + "temp");
 
             dataConnector.ProgressUpdate += device.Notify;
-            this.pathCsv = dataConnector.DownloadData(deviceId, PATH);
+            device.PathCsv = dataConnector.DownloadData(deviceId, PATH);
             dataConnector.ProgressUpdate -= device.Notify;
 
 
 
-            string[] info = Path.GetFileNameWithoutExtension(pathCsv).Split('_');
-            this.username = info[0];
-            this.date = info[1];
+            string[] info = Path.GetFileNameWithoutExtension(device.PathCsv).Split('_');
+            device.Username = info[0];
+            device.Date = info[1];
 
             device.CurrentStep = DataProcessStep.DataDownloaded;
             OnPropertyChanged("CurrentStep");
@@ -127,16 +138,16 @@ namespace IoTDataReceiver
             if (device == null) return;
             if (device.CurrentStep != DataProcessStep.DataDownloaded) return;
 
-            device.Notify(-1);
+            device.Notify(-1, deviceId);
             //     OnProgressUpdate(-1);
 
             System.Threading.Thread.Sleep(5000);
             //        this.pathZip = zipFile(PATH);
             this.algorithm.ProgressUpdate += device.Notify;
-            this.viewData = this.algorithm.ProcessDataFromFile(this.pathCsv);
+            device.ViewData = this.algorithm.ProcessDataFromFile(device.PathCsv, deviceId);
             this.algorithm.ProgressUpdate -= device.Notify;
 
-            device.Notify(100);
+            device.Notify(100, deviceId);
             //           OnProgressUpdate(100); // to show we are done
 
             device.CurrentStep = DataProcessStep.DataProcessed;
@@ -162,24 +173,24 @@ namespace IoTDataReceiver
             if (device == null) return;
             if (device.CurrentStep != DataProcessStep.DataProcessed) return;
 
-            device.Notify(-1);
+            device.Notify(-1, deviceId);
             //        OnProgressUpdate(-1);
 
             string password;
             try
             {
-                password = patients.GetPassword(this.username);
+                password = patients.GetPassword(device.Username);
             }
             catch (KeyNotFoundException ex)
             {
                 throw new MyExceptions.UnknownPatientException();
             }
-            var token = howRYou.Login(this.username, password);
-            howRYou.UploadFile(this.pathZip, token);
-            howRYou.UploadViewData(this.viewData, this.date, token);
+            var token = howRYou.Login(device.Username, password);
+            howRYou.UploadFile(device.PathZip, token);
+            howRYou.UploadViewData(device.ViewData, device.Date, token);
             howRYou.Logout(token);
 
-            device.Notify(100);
+            device.Notify(100, deviceId);
             //      OnProgressUpdate(100); // to show we are done
 
             device.CurrentStep = DataProcessStep.DataUploaded;
@@ -192,28 +203,23 @@ namespace IoTDataReceiver
             if (device == null) return;
             //  if (currentStep != DataProcessStep.DataUploaded) return;
 
-            device.Notify(-1);
+            device.Notify(-1, deviceId);
             //          OnProgressUpdate(-1);
 
             dataConnector.SetupDevice(deviceId, username, settings);
 
-            device.Notify(100);
+            device.Notify(100, deviceId);
             //          OnProgressUpdate(100); // to show we are done
 
             device.CurrentStep = DataProcessStep.DeviceCleared;
             OnPropertyChanged("CurrentStep");
         }
 
-        public DataProcessStep? GetCurrentStep(Guid deviceId)
+        public DataProcessStep GetCurrentStep(Guid deviceId)
         {
             DeviceReceiver device = FindDevice(deviceId);
-            if (device == null) return null;
+            if (device == null) throw new MyExceptions.DeviceException("Unknown device id:"+deviceId);
             return device.CurrentStep;
-        }
-
-        void Notify(int progress)
-        {
-            OnProgressUpdate(progress);
         }
 
         #region INotifyPropertyChanged
@@ -231,37 +237,33 @@ namespace IoTDataReceiver
 
         #endregion
 
-        #region OnProgressUpdate
+        /*   #region OnProgressUpdate
 
-        public event ProgressUpdateHandler ProgressUpdate;
-        protected virtual void OnProgressUpdate(int progress)
-        {
-            ProgressUpdateHandler handler = ProgressUpdate;
-            if (handler != null) handler(progress);
-        }
+           public event DeviceProgressUpdateHandler ProgressUpdate;
+           protected virtual void OnProgressUpdate(int progress, Guid deviceId)
+           {
+               DeviceProgressUpdateHandler handler = ProgressUpdate;
+               if (handler != null) handler(progress, deviceId);
+           }
 
-        #endregion
+           #endregion*/
 
         public class DeviceReceiver : INotifyPropertyChanged
         {
-            DataReceiver dataReceiver;
-            public DeviceReceiver(DataReceiver dataReceiver, Guid deviceId, ListViewDeviceItem deviceInfo)
+            public DeviceReceiver(Guid deviceId, ListViewDeviceItem deviceInfo)
             {
-                this.dataReceiver = dataReceiver;
                 this.deviceId = deviceId;
                 this.DeviceInfo = deviceInfo;
                 this.CurrentStep = DataProcessStep.DeviceInserted;
             }
 
             private Guid deviceId;
-
             public Guid DeviceId
             {
                 get { return this.deviceId; }
             }
 
             private DataProcessStep currentStep;
-
             public DataProcessStep CurrentStep
             {
                 get { return this.currentStep; }
@@ -269,7 +271,6 @@ namespace IoTDataReceiver
             }
 
             private int progress;
-
             public int Progress
             {
                 get { return this.progress; }
@@ -277,9 +278,23 @@ namespace IoTDataReceiver
             }
 
             public ListViewDeviceItem DeviceInfo { get; }
+            public string PathCsv { get; set; }
+            public string PathZip { get; set; }
+            public string ViewData { get; set; }
+            public string Username { get; set; }
+            public string Date { get; set; }
 
-            public void Notify(int progress)
+            private bool connected;
+            public bool Connected
             {
+                get { return this.connected; }
+                set { this.connected = value; OnPropertyChanged("Connected"); }
+            }
+
+            public void Notify(int progress, Guid deviceId)
+            {
+                if (!deviceId.Equals(this.deviceId))
+                    return;
                 this.Progress = progress;
                 //     dataReceiver.Notify(progress);
             }

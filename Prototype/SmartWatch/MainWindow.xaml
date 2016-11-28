@@ -21,14 +21,14 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding Path=DeviceInfo.PatientName, Mode=OneWay}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=DeviceInfo.BatteryLevel, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Connected, Mode=OneWay}"/>
                     <ProgressBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0" Height="5" Value="{Binding Path=Progress, Mode=OneWay}" Minimum="0" Maximum="100" IsIndeterminate="{Binding Path=Progress, Mode=OneWay, Converter={StaticResource indeterminateConverter}}"/>
                 </Grid>
             </Border>
         </DataTemplate>
 
         <DataTemplate x:Key="DisconnectedDeviceTemplate">
-            <Border Margin="5" BorderThickness="0" Background="Red" Padding="10">
+            <Border Margin="5" BorderThickness="2" Background="Red" Padding="10">
                 <Grid Margin="0">
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
