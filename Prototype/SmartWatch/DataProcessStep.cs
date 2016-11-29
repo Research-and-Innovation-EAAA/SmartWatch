@@ -2,7 +2,6 @@
 {
     public enum DataProcessStep
     {
-        Processing = -1,
         DeviceInserted = 0,
         DataDownloaded = 1,
         DataProcessed = 2,

@@ -65,7 +65,7 @@ namespace IoTDataReceiver
 
             }
 
-            Directory.CreateDirectory(path + "temp");
+            Directory.CreateDirectory(path + @"\temp");
 
             GeneaDateTime startTime = null;
             try
@@ -78,7 +78,7 @@ namespace IoTDataReceiver
             }
 
             string startTimeUtc = startTime.ToDateTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo);
-            string fileName = path + @"temp\" + device.SubjectInfo.SubjectCode + "_" + startTime.ToDateTime().ToString("yyyyMMddHHmmss") + ".csv";
+            string fileName = path + @"\temp\" + device.SubjectInfo.SubjectCode + "_" + startTime.ToDateTime().ToString("yyyyMMddHHmmss") + ".csv";
 
             using (var filer = new GeneaDeviceFiler(device, fileName))
             {

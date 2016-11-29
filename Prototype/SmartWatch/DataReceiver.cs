@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -93,11 +92,10 @@ namespace IoTDataReceiver
         {
             DeviceReceiver result = this.availableDevices.FirstOrDefault(d => d.DeviceId == deviceId);
             return result;
-
         }
 
-        const string PATH = @"c:\SmartWatch\realtest\";
-        
+        const string PATH = @"c:\SmartWatch\data\";
+
         public void GetData(Guid deviceId)
         {
             DeviceReceiver device = FindDevice(deviceId);
@@ -106,9 +104,9 @@ namespace IoTDataReceiver
             if (!device.Connected) return;
 
             // Determine whether the directory exists
-            if (Directory.Exists(PATH))
+            if (Directory.Exists(PATH + device.DeviceId))
             {
-                System.IO.DirectoryInfo di = new DirectoryInfo(PATH);
+                DirectoryInfo di = new DirectoryInfo(PATH + device.DeviceId);
 
                 foreach (FileInfo file in di.GetFiles())
                 {
@@ -122,13 +120,11 @@ namespace IoTDataReceiver
             }
 
             // Try to create the directory
-            Directory.CreateDirectory(PATH + "temp");
+            Directory.CreateDirectory(PATH + device.DeviceId + @"\temp");
 
             dataConnector.ProgressUpdate += device.Notify;
-            device.PathCsv = dataConnector.DownloadData(deviceId, PATH);
+            device.PathCsv = dataConnector.DownloadData(deviceId, PATH + device.DeviceId);
             dataConnector.ProgressUpdate -= device.Notify;
-
-
 
             string[] info = Path.GetFileNameWithoutExtension(device.PathCsv).Split('_');
             device.Username = info[0];
@@ -147,7 +143,7 @@ namespace IoTDataReceiver
             device.Notify(-1, deviceId);  // -1 is indeterminate
 
             System.Threading.Thread.Sleep(5000);
-            device.PathZip = zipFile(PATH);
+            device.PathZip = zipFile(PATH + device.DeviceId);
             this.algorithm.ProgressUpdate += device.Notify;
             device.ViewData = this.algorithm.ProcessDataFromFile(device.PathCsv, deviceId);
             this.algorithm.ProgressUpdate -= device.Notify;
@@ -160,8 +156,8 @@ namespace IoTDataReceiver
 
         private static string zipFile(string path)
         {
-            string tempFolderPath = path + @"temp";
-            string zipFilePath = path + @"data.zip";
+            string tempFolderPath = path + @"\temp";
+            string zipFilePath = path + @"\data.zip";
             if (!Directory.Exists(tempFolderPath))
             {
                 throw new Exception("Cannot read the loaded file in temporary folder!");
@@ -210,6 +206,7 @@ namespace IoTDataReceiver
             device.Notify(-1, deviceId);
 
             dataConnector.SetupDevice(deviceId, username, settings);
+            //TODO delete files + device from list
 
             device.Notify(100, deviceId); // to show we are done
 
