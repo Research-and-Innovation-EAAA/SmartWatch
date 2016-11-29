@@ -35,7 +35,7 @@ namespace IoTDataReceiver
         private DataReceiver()
         {
             this.dataConnector = GeneActivDataConnector.Instance; //DummyDataConnector.Instance;
-            this.algorithm = new SimpleAlgorithm();
+            this.algorithm = new HundredAlgorithm(); // new SimpleAlgorithm();
             this.patients = PatientService.Instance;
             this.howRYou = HowRYouConnector.Instance;
             this.availableDevices = new ObservableCollection<IDeviceData>();
@@ -76,8 +76,9 @@ namespace IoTDataReceiver
                     {
                         IDeviceData deviceData = this.FindDevice(oldDevice.DeviceId);
                         
-                        // if ready for another patient, remove from list... 
-                        if (deviceData.CurrentStep == DataProcessStep.DeviceCleared)
+                        // if ready for another patient or data processed, remove from list... 
+                        if (deviceData.CurrentStep == DataProcessStep.DeviceCleared
+                        || deviceData.CurrentStep == DataProcessStep.DataUploaded)
                         {
                             availableDevices.Remove(deviceData);
                         }
