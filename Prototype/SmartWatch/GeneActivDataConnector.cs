@@ -159,7 +159,6 @@ namespace IoTDataReceiver
                 PatientName = device.SubjectInfo.SubjectCode });
 
             device.StatusUpdate += OnLiveDeviceStatusUpdate;
-            device.DeviceSetupUpdate += OnLiveDeviceSetupUpdate;
             smartWatches.Add(device.GeneaDeviceID, device);
 
             // Bee-beep
@@ -207,11 +206,6 @@ namespace IoTDataReceiver
             Debug.Write("device" + deviceID + ", status " + status);
             ListViewDeviceItem item = this.FindDeviceListItem(deviceID);
             if (item != null) item.SetBatteryVoltage(status.BatteryVoltage);  // volts to level
-        }
-
-        private void OnLiveDeviceSetupUpdate(object sender, EventArgs e)
-        {
-            //TODO update listview  Dispatcher.BeginInvoke(new Action(() => CollectionViewSource.GetDefaultView(Devices).Refresh()));
         }
 
         private void SetupDevice(IGeneaDevice device, string username, float frequency, int period, string studyCenter, string studyCode)

@@ -75,17 +75,17 @@ namespace IoTDataReceiver
                         var X = float.Parse(values[1], CultureInfo.InvariantCulture);
                         var Y = float.Parse(values[2], CultureInfo.InvariantCulture);
                         var Z = float.Parse(values[3], CultureInfo.InvariantCulture);
-                        row.G = (float)Math.Sqrt(X * X + Y * Y + Z * Z);
-                        row.L = float.Parse(values[4], CultureInfo.InvariantCulture);
-                        row.B = values[5] == "1";
-                        row.T = float.Parse(values[6], CultureInfo.InvariantCulture);
+                        row.activity = (float)Math.Sqrt(X * X + Y * Y + Z * Z);
+                        row.lightIntensity = float.Parse(values[4], CultureInfo.InvariantCulture);
+                        row.button = values[5] == "1";
+                        row.temperature = float.Parse(values[6], CultureInfo.InvariantCulture);
 
                         if (firstRecordTime == null)
                             firstRecordTime = row.timestamp;
-                        avgActivity += row.G;
-                        avgTemperature += row.T;
-                        avgLight += row.L;
-                        maxButton = maxButton || row.B;
+                        avgActivity += row.activity;
+                        avgTemperature += row.temperature;
+                        avgLight += row.lightIntensity;
+                        maxButton = maxButton || row.button;
                     }
                     catch (Exception e)
                     {
@@ -96,10 +96,10 @@ namespace IoTDataReceiver
 
                 var row2 = new DataClass();
                 row2.timestamp = (DateTime)firstRecordTime;
-                row2.G = avgActivity / number;
-                row2.L = avgLight / number;
-                row2.B = maxButton;
-                row2.T = avgTemperature / number;
+                row2.activity = avgActivity / number;
+                row2.lightIntensity = avgLight / number;
+                row2.button = maxButton;
+                row2.temperature = avgTemperature / number;
 
                 listData.Add(row2);
 
@@ -143,14 +143,14 @@ namespace IoTDataReceiver
             /*   public float X { get; set; }
                public float Y { get; set; }
                public float Z { get; set; }*/
-            public float G { get; set; }
-            public float T { get; set; }
-            public float L { get; set; }
-            public bool B { get; set; }
+            public float activity { get; set; }
+            public float temperature { get; set; }
+            public float lightIntensity { get; set; }
+            public bool button { get; set; }
 
             public override string ToString()
             {
-                return timestamp.ToString() + " " + G + ", " + L + ", " + B + ", " + T + " °C";
+                return timestamp.ToString() + " " + activity + ", " + lightIntensity + ", " + button + ", " + temperature + " °C";
             }
         }
     }

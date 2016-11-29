@@ -94,6 +94,7 @@
     <Compile Include="HowRYouConnector.cs" />
     <Compile Include="IDataConnector.cs" />
     <Compile Include="IDataReceiver.cs" />
+    <Compile Include="IDeviceData.cs" />
     <Compile Include="IObserver.cs" />
     <Compile Include="ISettingsDao.cs" />
     <Compile Include="IPatientDao.cs" />

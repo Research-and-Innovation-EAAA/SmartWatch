@@ -33,7 +33,7 @@ namespace IoTDataReceiver
         {
             public override DataTemplate SelectTemplate(object item, DependencyObject container)
             {
-                DeviceReceiver device = ((DeviceReceiver)item);
+                DeviceData device = ((DeviceData)item);
 
                 Window window = Application.Current.MainWindow;
 

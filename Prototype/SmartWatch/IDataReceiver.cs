@@ -21,7 +21,7 @@ namespace IoTDataReceiver
 
         void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings);
 
-        ObservableCollection<DeviceReceiver> GetAvailableDevices();
+        ObservableCollection<IDeviceData> GetAvailableDevices();
 
         DataProcessStep GetCurrentStep(Guid deviceId);
 

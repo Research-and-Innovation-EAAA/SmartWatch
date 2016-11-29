@@ -47,8 +47,7 @@
     </Window.Resources>
 
     <Grid>
-        <Button x:Name="btnShowData" Content="Show data" HorizontalAlignment="Left" Margin="10,444,0,0" VerticalAlignment="Top" Width="200" Height="49" Click="btnShowData_Click"/>
-        <ListBox x:Name="listBoxDevices" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" Height="429" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="listBoxWatches_SelectionChanged">
+        <ListBox x:Name="listBoxDevices" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" Height="483" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" SelectionChanged="listBoxWatches_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <ContentControl x:Name="cc" Content="{Binding}" ContentTemplate="{DynamicResource ConnectedDeviceTemplate}"/>

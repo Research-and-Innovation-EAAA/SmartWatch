@@ -28,7 +28,6 @@ namespace IoTDataReceiver
 
             BindingOperations.SetBinding(btnGet, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
-                //         Source = this.dataReceiver,
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
@@ -39,7 +38,6 @@ namespace IoTDataReceiver
 
             BindingOperations.SetBinding(btnProcess, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
-                //             Source = this.dataReceiver,
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
@@ -50,7 +48,6 @@ namespace IoTDataReceiver
 
             BindingOperations.SetBinding(btnUpload, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
-                //          Source = this.dataReceiver,
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
@@ -95,7 +92,7 @@ namespace IoTDataReceiver
         {
             if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((DeviceReceiver)listBoxDevices.SelectedItem).DeviceId;
+            Guid deviceId = ((IDeviceData)listBoxDevices.SelectedItem).DeviceId;
 
             BackgroundWorker worker = new MyBackgroundWorker();
             worker.DoWork += workerGet_DoWork;
@@ -163,7 +160,7 @@ namespace IoTDataReceiver
         {
             if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((DeviceReceiver)listBoxDevices.SelectedItem).DeviceId;
+            Guid deviceId = ((IDeviceData)listBoxDevices.SelectedItem).DeviceId;
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerProcess_DoWork;
@@ -201,7 +198,7 @@ namespace IoTDataReceiver
         {
             if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((DeviceReceiver)listBoxDevices.SelectedItem).DeviceId;
+            Guid deviceId = ((IDeviceData)listBoxDevices.SelectedItem).DeviceId;
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerSend_DoWork;
@@ -228,7 +225,7 @@ namespace IoTDataReceiver
             catch (MyExceptions.UnauthorizedException ex)
             {
                 //          this.worker.ReportProgress(0);
-                
+
                 MessageBox.Show("Wrong password for the patient, cannot log in.\n" + ex.Message);
             }
             catch (MyExceptions.CommunicationException ex)
@@ -261,7 +258,10 @@ namespace IoTDataReceiver
         {
             if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((DeviceReceiver)listBoxDevices.SelectedItem).DeviceId;
+            IDeviceData device = (IDeviceData)listBoxDevices.SelectedItem;
+            if (!device.Connected) return;
+
+            Guid deviceId = device.DeviceId;
 
             SetupWindow w = new SetupWindow(dataReceiver);
             w.Owner = this;
