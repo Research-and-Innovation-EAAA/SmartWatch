@@ -109,7 +109,7 @@ namespace IoTDataReceiver
         {
             //TODO does sender contain deviceId????
             int progress = (int)(100 * ((double)e.NumOfDataBlocks / (double)e.TotalDataBlocks));
-            OnProgressUpdate(progress, new Guid());
+            OnProgressUpdate(progress, ((GeneaDeviceFiler)sender).Device.GeneaDeviceID);
         }
 
         private GeneaDeviceManager manager = new GeneaDeviceManager();
@@ -153,7 +153,10 @@ namespace IoTDataReceiver
             // New entry for list control data source with default streaming options
 
             /*            runOnMain(() => { devices.Add(new ListViewDeviceItem { DeviceId = device.GeneaDeviceID, PatientName = device.SubjectInfo.SubjectCode }); });*/
-            devices.Add(new ListViewDeviceItem { DeviceId = device.GeneaDeviceID, PatientName = device.SubjectInfo.SubjectCode });
+            devices.Add(new ListViewDeviceItem {
+                DeviceId = device.GeneaDeviceID,
+                DeviceNumber = device.DeviceIdentity.DeviceUniqueSerialCode,
+                PatientName = device.SubjectInfo.SubjectCode });
 
             device.StatusUpdate += OnLiveDeviceStatusUpdate;
             device.DeviceSetupUpdate += OnLiveDeviceSetupUpdate;

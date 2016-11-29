@@ -18,6 +18,7 @@ namespace IoTDataReceiver
         PatientService patients;
         HowRYouConnector howRYou;
 
+        #region Singleton
 
         private static DataReceiver instance = null;
         public static DataReceiver Instance
@@ -30,14 +31,23 @@ namespace IoTDataReceiver
             }
         }
 
+        #endregion
+
         private DataReceiver()
         {
-            this.dataConnector = DummyDataConnector.Instance; //new GeneActivDataConnector();
-            this.algorithm = new DummyAlgorithm();
+            this.dataConnector = GeneActivDataConnector.Instance; //DummyDataConnector.Instance;
+            this.algorithm = new SimpleAlgorithm();
             this.patients = PatientService.Instance;
             this.howRYou = HowRYouConnector.Instance;
             this.availableDevices = new ObservableCollection<DeviceReceiver>();
 
+            foreach (var v in dataConnector.GetConnectedDevices())
+            {
+                ListViewDeviceItem device = (ListViewDeviceItem)v;
+                var rec = new DeviceReceiver(device.DeviceId, device);
+                rec.Connected = true;
+                runOnMain(() => availableDevices.Add(rec));
+            }
             this.dataConnector.GetConnectedDevices().CollectionChanged += ConnectedDevicesChangeHandler;
         }
 
@@ -53,11 +63,9 @@ namespace IoTDataReceiver
                 foreach (var v in e.NewItems)
                 {
                     ListViewDeviceItem newDevice = (ListViewDeviceItem)v;
-                    Debug.WriteLine("adding!!!!");
                     var rec = new DeviceReceiver(newDevice.DeviceId, newDevice);
                     rec.Connected = true;
                     runOnMain(() => availableDevices.Add(rec));
-                    Debug.WriteLine("adding!!!!DONE");
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
@@ -65,12 +73,11 @@ namespace IoTDataReceiver
                 foreach (var v in e.OldItems)
                 {
                     ListViewDeviceItem oldDevice = (ListViewDeviceItem)v;
-                    Debug.WriteLine("removing!!!!");
                     runOnMain(() =>
                     {
+                        // only mark as disconnected, so it is possible to still process and send the data
                         FindDevice(oldDevice.DeviceId).Connected = false;
                     });
-                    Debug.WriteLine("removing!!!!DONE");
                 }
             }
         }
@@ -90,9 +97,7 @@ namespace IoTDataReceiver
         }
 
         const string PATH = @"c:\SmartWatch\realtest\";
-
-
-
+        
         public void GetData(Guid deviceId)
         {
             DeviceReceiver device = FindDevice(deviceId);
@@ -139,17 +144,15 @@ namespace IoTDataReceiver
             if (device == null) return;
             if (device.CurrentStep != DataProcessStep.DataDownloaded) return;
 
-            device.Notify(-1, deviceId);
-            //     OnProgressUpdate(-1);
+            device.Notify(-1, deviceId);  // -1 is indeterminate
 
             System.Threading.Thread.Sleep(5000);
-            //        this.pathZip = zipFile(PATH);
+            device.PathZip = zipFile(PATH);
             this.algorithm.ProgressUpdate += device.Notify;
             device.ViewData = this.algorithm.ProcessDataFromFile(device.PathCsv, deviceId);
             this.algorithm.ProgressUpdate -= device.Notify;
 
-            device.Notify(100, deviceId);
-            //           OnProgressUpdate(100); // to show we are done
+            device.Notify(100, deviceId); // to show we are done
 
             device.CurrentStep = DataProcessStep.DataProcessed;
             OnPropertyChanged("CurrentStep");
@@ -174,8 +177,7 @@ namespace IoTDataReceiver
             if (device == null) return;
             if (device.CurrentStep != DataProcessStep.DataProcessed) return;
 
-            device.Notify(-1, deviceId);
-            //        OnProgressUpdate(-1);
+            device.Notify(-1, deviceId); // -1 is indeterminate
 
             string password;
             try
@@ -184,6 +186,7 @@ namespace IoTDataReceiver
             }
             catch (KeyNotFoundException ex)
             {
+                device.Notify(0, deviceId);
                 throw new MyExceptions.UnknownPatientException();
             }
             var token = howRYou.Login(device.Username, password);
@@ -191,8 +194,7 @@ namespace IoTDataReceiver
             howRYou.UploadViewData(device.ViewData, device.Date, token);
             howRYou.Logout(token);
 
-            device.Notify(100, deviceId);
-            //      OnProgressUpdate(100); // to show we are done
+            device.Notify(100, deviceId);// to show we are done
 
             device.CurrentStep = DataProcessStep.DataUploaded;
             OnPropertyChanged("CurrentStep");
@@ -206,12 +208,10 @@ namespace IoTDataReceiver
             if (!device.Connected) return;
 
             device.Notify(-1, deviceId);
-            //          OnProgressUpdate(-1);
 
             dataConnector.SetupDevice(deviceId, username, settings);
 
-            device.Notify(100, deviceId);
-            //          OnProgressUpdate(100); // to show we are done
+            device.Notify(100, deviceId); // to show we are done
 
             device.CurrentStep = DataProcessStep.DeviceCleared;
             OnPropertyChanged("CurrentStep");
@@ -220,7 +220,7 @@ namespace IoTDataReceiver
         public DataProcessStep GetCurrentStep(Guid deviceId)
         {
             DeviceReceiver device = FindDevice(deviceId);
-            if (device == null) throw new MyExceptions.DeviceException("Unknown device id:"+deviceId);
+            if (device == null) throw new MyExceptions.DeviceException("Unknown device id:" + deviceId);
             return device.CurrentStep;
         }
 
@@ -239,16 +239,6 @@ namespace IoTDataReceiver
 
         #endregion
 
-        /*   #region OnProgressUpdate
-
-           public event DeviceProgressUpdateHandler ProgressUpdate;
-           protected virtual void OnProgressUpdate(int progress, Guid deviceId)
-           {
-               DeviceProgressUpdateHandler handler = ProgressUpdate;
-               if (handler != null) handler(progress, deviceId);
-           }
-
-           #endregion*/
 
         public class DeviceReceiver : INotifyPropertyChanged
         {
@@ -298,7 +288,6 @@ namespace IoTDataReceiver
                 if (!deviceId.Equals(this.deviceId))
                     return;
                 this.Progress = progress;
-                //     dataReceiver.Notify(progress);
             }
 
             #region INotifyPropertyChanged

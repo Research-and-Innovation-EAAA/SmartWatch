@@ -230,6 +230,11 @@ namespace IoTDataReceiver
       //          this.worker.ReportProgress(0);
                 MessageBox.Show("Wrong password for the patient, cannot log in.\n" + ex.Message);
             }
+            catch (MyExceptions.CommunicationException ex)
+            {
+                //          this.worker.ReportProgress(0);
+                MessageBox.Show("Error communication with server.\n" + ex.Message);
+            }
             catch (MyExceptions.UnknownPatientException ex)
             {
                 //this.worker.ReportProgress(0);

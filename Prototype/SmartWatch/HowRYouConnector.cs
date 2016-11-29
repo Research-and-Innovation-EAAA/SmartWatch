@@ -30,7 +30,10 @@ namespace IoTDataReceiver
 
             // execute the request
             IRestResponse response = client.Execute(request);
-
+            if (response.StatusCode == 0)
+            {
+                throw new MyExceptions.CommunicationException("Cannot connect to server");
+            }
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 throw new MyExceptions.UnauthorizedException();
