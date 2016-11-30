@@ -10,36 +10,39 @@ using System.Windows;
 
 namespace IoTDataReceiver
 {
-    public class DataReceiver : IDataReceiver, INotifyPropertyChanged
+    public class Service : IService, INotifyPropertyChanged
     {
-        IDataConnector dataConnector;
+        PatientService patientsService;
+        SettingsService settingsService;
+        IDeviceConnector dataConnector;
+        IDatabaseConnector databaseConnector;
         IProcessAlgorithm algorithm;
-        PatientService patients;
-        HowRYouConnector howRYou;
 
         #region Singleton
 
-        private static DataReceiver instance = null;
-        public static DataReceiver Instance
+        private static Service instance = null;
+        public static Service Instance
         {
             get
             {
                 if (instance == null)
-                    instance = new DataReceiver();
+                    instance = new Service();
                 return instance;
             }
         }
 
         #endregion
 
-        private DataReceiver()
+        private Service()
         {
-            this.dataConnector = GeneActivDataConnector.Instance; //DummyDataConnector.Instance;
-            this.algorithm = new HundredAlgorithm(); // new SimpleAlgorithm();
-            this.patients = PatientService.Instance;
-            this.howRYou = HowRYouConnector.Instance;
-            this.availableDevices = new ObservableCollection<IDeviceData>();
+            this.patientsService = PatientService.Instance;
+            this.settingsService = SettingsService.Instance;
 
+            this.dataConnector = GeneActivDeviceConnector.Instance; //DummyDataConnector.Instance;
+            this.databaseConnector = HowRYouConnector.Instance;
+            this.algorithm = new HundredAlgorithm(); // new SimpleAlgorithm();
+
+            this.availableDevices = new ObservableCollection<IDeviceData>();
             foreach (var v in dataConnector.GetConnectedDevices())
             {
                 ListViewDeviceItem device = (ListViewDeviceItem)v;
@@ -75,10 +78,10 @@ namespace IoTDataReceiver
                     runOnMain(() =>
                     {
                         IDeviceData deviceData = this.FindDevice(oldDevice.DeviceId);
-                        
+
                         // if ready for another patient or data processed, remove from list... 
                         if (deviceData.CurrentStep == DataProcessStep.DeviceCleared
-                        || deviceData.CurrentStep == DataProcessStep.DataUploaded)
+                            || deviceData.CurrentStep == DataProcessStep.DataUploaded)
                         {
                             availableDevices.Remove(deviceData);
                         }
@@ -90,7 +93,6 @@ namespace IoTDataReceiver
         }
 
         private ObservableCollection<IDeviceData> availableDevices = null;
-
         public ObservableCollection<IDeviceData> GetAvailableDevices()
         {
             return this.availableDevices;
@@ -98,7 +100,7 @@ namespace IoTDataReceiver
 
         private DeviceData FindDevice(Guid deviceId)
         {
-            DeviceData result = (DeviceData) this.availableDevices.FirstOrDefault(d => d.DeviceId == deviceId);
+            DeviceData result = (DeviceData)this.availableDevices.FirstOrDefault(d => d.DeviceId == deviceId);
             return result;
         }
 
@@ -209,12 +211,12 @@ namespace IoTDataReceiver
             string password;
             try
             {
-                password = patients.GetPassword(device.Username);
+                password = patientsService.GetPassword(device.Username);
 
-                var token = howRYou.Login(device.Username, password);
-                howRYou.UploadFile(device.PathZip, token);
-                howRYou.UploadViewData(device.ViewData, device.Date, token);
-                howRYou.Logout(token);
+                var token = databaseConnector.Login(device.Username, password);
+                databaseConnector.UploadFile(device.PathZip, token);
+                databaseConnector.UploadViewData(device.ViewData, device.Date, token);
+                databaseConnector.Logout(token);
 
             }
             catch (KeyNotFoundException ex)
@@ -250,13 +252,6 @@ namespace IoTDataReceiver
 
             device.CurrentStep = DataProcessStep.DeviceCleared;
             OnPropertyChanged("CurrentStep");
-        }
-
-        public DataProcessStep GetCurrentStep(Guid deviceId)
-        {
-            DeviceData device = FindDevice(deviceId);
-            if (device == null) throw new MyExceptions.DeviceException("Unknown device id:" + deviceId);
-            return device.CurrentStep;
         }
 
         #region INotifyPropertyChanged
@@ -304,6 +299,13 @@ namespace IoTDataReceiver
                 set { this.progress = value; OnPropertyChanged("Progress"); }
             }
 
+            private bool connected;
+            public bool Connected
+            {
+                get { return this.connected; }
+                set { this.connected = value; OnPropertyChanged("Connected"); }
+            }
+
             public ListViewDeviceItem DeviceInfo { get; }
             public string PathCsv { get; set; }
             public string PathZip { get; set; }
@@ -311,12 +313,6 @@ namespace IoTDataReceiver
             public string Username { get; set; }
             public string Date { get; set; }
 
-            private bool connected;
-            public bool Connected
-            {
-                get { return this.connected; }
-                set { this.connected = value; OnPropertyChanged("Connected"); }
-            }
 
             public void Notify(int progress, Guid deviceId)
             {

@@ -8,6 +8,7 @@ namespace IoTDataReceiver
     {
         private IPatientDao patientDao = null;
 
+        #region Singleton
         private static PatientService instance = null;
         public static PatientService Instance
         {
@@ -20,6 +21,7 @@ namespace IoTDataReceiver
                 return instance;
             }
         }
+        #endregion
 
         private PatientService() {
             this.patientDao = PatientFileDao.Instance;

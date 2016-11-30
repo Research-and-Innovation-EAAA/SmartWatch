@@ -4,10 +4,11 @@ using System.Diagnostics;
 
 namespace IoTDataReceiver
 {
-    class HowRYouConnector
+    class HowRYouConnector : IDatabaseConnector
     {
         private static HowRYouConnector instance;
 
+        #region Singleton
         public static HowRYouConnector Instance
         {
             get
@@ -18,10 +19,10 @@ namespace IoTDataReceiver
             }
         }
         private HowRYouConnector() { }
-
+        #endregion
 
         private RestClient client = new RestClient("http://192.168.56.101:3000/api/v1");
-        public HowRYouLoginToken Login(string username, string password)
+        public LoginToken Login(string username, string password)
         {
             // prepare the request
             var request = new RestRequest("login", Method.POST);
@@ -47,10 +48,10 @@ namespace IoTDataReceiver
             string authToken = ojObject["authToken"].ToString();
             string userId = ojObject["userId"].ToString();
 
-            return new HowRYouLoginToken { authToken = authToken, userId = userId };
+            return new LoginToken { authToken = authToken, userId = userId };
         }
 
-        public void Logout(HowRYouLoginToken token)
+        public void Logout(LoginToken token)
         {
             // prepare the request
             var request = new RestRequest("logout", Method.POST);
@@ -63,7 +64,7 @@ namespace IoTDataReceiver
             Debug.WriteLine("API response: " + content);
         }
 
-        public void UploadFile(string filePath, HowRYouLoginToken token)
+        public void UploadFile(string filePath, LoginToken token)
         {
             // prepare the request
             var request = new RestRequest("smartwatch", Method.POST);
@@ -77,7 +78,7 @@ namespace IoTDataReceiver
             Debug.WriteLine(content);
         }
 
-        public void UploadViewData(string jsonData, string date, HowRYouLoginToken token)
+        public void UploadViewData(string jsonData, string date, LoginToken token)
         {
             // prepare the request
             var request = new RestRequest("smartwatchview", Method.POST);
@@ -91,12 +92,6 @@ namespace IoTDataReceiver
             IRestResponse response = client.Execute(request);
             var content = response.Content; // raw content as string
             Debug.WriteLine(content);
-        }
-
-        public class HowRYouLoginToken
-        {
-            public string authToken { get; set; }
-            public string userId { get; set; }
         }
     }
 }

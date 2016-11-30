@@ -1,15 +1,11 @@
-﻿using GeneActiv.GeneaLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
-    interface IDataConnector
+    interface IDeviceConnector
     {
         /// <summary>
         /// Method for downloading data from a device, returning a CSV file with records.

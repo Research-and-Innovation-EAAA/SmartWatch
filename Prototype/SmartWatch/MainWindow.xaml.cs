@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using static IoTDataReceiver.DataReceiver;
+using static IoTDataReceiver.Service;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
@@ -14,11 +14,11 @@ namespace IoTDataReceiver
     /// </summary>
     public partial class MainWindow : Window
     {
-        private IDataReceiver dataReceiver;
+        private IService dataReceiver;
         public MainWindow()
         {
             InitializeComponent();
-            this.dataReceiver = DataReceiver.Instance;
+            this.dataReceiver = Service.Instance;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -72,7 +72,7 @@ namespace IoTDataReceiver
 
         private void btnSet_Click(object sender, RoutedEventArgs e)
         {
-            SetupWindow w = new SetupWindow(dataReceiver);
+            SetupWindow w = new SetupWindow();
             w.ShowDialog();
         }
 
@@ -263,7 +263,7 @@ namespace IoTDataReceiver
 
             Guid deviceId = device.DeviceId;
 
-            SetupWindow w = new SetupWindow(dataReceiver);
+            SetupWindow w = new SetupWindow();
             w.Owner = this;
             w.ShowDialog();
 

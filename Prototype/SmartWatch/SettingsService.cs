@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Configuration;
-using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
@@ -8,30 +6,24 @@ namespace IoTDataReceiver
     {
         private static SettingsService instance = null;
 
+        #region Singleton
         public static SettingsService Instance
         {
             get
             {
-                if (instance == null)
-                {
-                    instance = new SettingsService();
-                }
+                if (instance == null) { instance = new SettingsService(); }
                 return instance;
             }
         }
+        #endregion
 
-        private ISettingsDao settingsDao = null;
-
-        private SettingsService()
-        {
-            this.settingsDao = SettingsDao.Instance;
-        }
+        private SettingsService() { }
 
         public Dictionary<string, string> Settings
         {
-            get { return this.settingsDao.Settings; }
+            get { return SettingsDao.Instance.Settings; }
 
-            set { this.settingsDao.Settings = value; }
+            set { SettingsDao.Instance.Settings = value; }
         }
     }
 }

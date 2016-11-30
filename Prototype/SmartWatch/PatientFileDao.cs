@@ -7,10 +7,11 @@ namespace IoTDataReceiver
     {
 
         const string PATH = @"C:\SmartWatch\patients.csv";
+
         private Dictionary<string, string> patients = null;
 
+        #region Singleton
         private static PatientFileDao instance = null;
-
         public static PatientFileDao Instance
         {
             get
@@ -22,9 +23,9 @@ namespace IoTDataReceiver
                 return instance;
             }
         }
+        #endregion
 
         private PatientFileDao() { }
-
 
         public List<string> GetPatients()
         {
@@ -39,7 +40,7 @@ namespace IoTDataReceiver
                 LoadPatients();
             return this.patients[username];
         }
-        
+
         private void LoadPatients()
         {
             var reader = new StreamReader(File.OpenRead(PATH));

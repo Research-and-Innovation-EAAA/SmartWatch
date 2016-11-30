@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using static IoTDataReceiver.DataReceiver;
+using static IoTDataReceiver.Service;
 
 namespace IoTDataReceiver
 {

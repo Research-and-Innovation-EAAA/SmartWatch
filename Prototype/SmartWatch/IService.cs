@@ -1,16 +1,10 @@
-﻿using IoTDataReceiver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static IoTDataReceiver.DataReceiver;
-using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
-    public interface IDataReceiver
+    public interface IService
     {
 
         void GetData(Guid deviceId);
@@ -22,8 +16,6 @@ namespace IoTDataReceiver
         void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings);
 
         ObservableCollection<IDeviceData> GetAvailableDevices();
-
-        DataProcessStep GetCurrentStep(Guid deviceId);
 
     }
 }

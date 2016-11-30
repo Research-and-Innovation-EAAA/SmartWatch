@@ -12,20 +12,20 @@ using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
-    class DummyDataConnector : IDataConnector
+    class DummyDeviceConnector : IDeviceConnector
     {
-        private static DummyDataConnector instance = null;
-        public static DummyDataConnector Instance
+        private static DummyDeviceConnector instance = null;
+        public static DummyDeviceConnector Instance
         {
             get
             {
                 if (instance == null)
-                    instance = new DummyDataConnector();
+                    instance = new DummyDeviceConnector();
                 return instance;
             }
         }
 
-        private DummyDataConnector()
+        private DummyDeviceConnector()
         {
             devices = new ObservableCollection<ListViewDeviceItem>();
 

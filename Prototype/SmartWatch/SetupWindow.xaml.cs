@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
@@ -12,7 +11,7 @@ namespace IoTDataReceiver
         private List<string> frequencies;
         public Dictionary<string, string> Settings { get; set; }
 
-        public SetupWindow(IDataReceiver dataReceiver)
+        public SetupWindow()
         {
             InitializeComponent();
             this.Settings = new Dictionary<string, string>(SettingsService.Instance.Settings); // copy of existing settings, to allow rolling back (cancel button)
