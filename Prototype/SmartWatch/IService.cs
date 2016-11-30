@@ -13,7 +13,7 @@ namespace IoTDataReceiver
 
         void SendData(Guid deviceId);
 
-        void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings);
+        void PrepareDevice(Guid deviceId, string username);
 
         ObservableCollection<IDeviceData> GetAvailableDevices();
 

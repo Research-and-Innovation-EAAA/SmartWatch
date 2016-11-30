@@ -236,17 +236,17 @@ namespace IoTDataReceiver
             OnPropertyChanged("CurrentStep");
         }
 
-        public void PrepareDevice(Guid deviceId, string username, Dictionary<string, string> settings)
+        public void PrepareDevice(Guid deviceId, string username)
         {
             DeviceData device = FindDevice(deviceId);
             if (device == null) return;
-            //  if (currentStep != DataProcessStep.DataUploaded) return;
+            //if (device.currentStep != DataProcessStep.DataUploaded) return;
             if (!device.Connected) return;
 
             device.Notify(-1, deviceId);
 
-            dataConnector.SetupDevice(deviceId, username, settings);
-            //TODO delete files + device from list
+            dataConnector.SetupDevice(deviceId, username, settingsService.Settings);
+            //TODO delete files
 
             device.Notify(100, deviceId); // to show we are done
 

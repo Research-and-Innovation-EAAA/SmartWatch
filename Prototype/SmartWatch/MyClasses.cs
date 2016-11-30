@@ -1,10 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using static IoTDataReceiver.Service;
 
 namespace IoTDataReceiver
 {
@@ -12,24 +8,8 @@ namespace IoTDataReceiver
     {
 
         public delegate void DeviceProgressUpdateHandler(int percent, Guid deviceId);
-        public delegate void ProgressUpdateHandler(int percent);
 
-        /*    public struct Settings
-            {
-                public float Frequency { get; set; }
-                public int Period { get; set; }
-
-                public string StudyCenter { get; set; }
-                public string StudyCode { get; set; }
-
-                public override string ToString()
-                {
-                    return Frequency + " " + Period + " " + StudyCenter + " " + StudyCode;
-                }
-            }
-            */
-
-        public class DeviceTemplateSelector : DataTemplateSelector
+      /*  public class DeviceTemplateSelector : DataTemplateSelector
         {
             public override DataTemplate SelectTemplate(object item, DependencyObject container)
             {
@@ -46,14 +26,23 @@ namespace IoTDataReceiver
                     return (DataTemplate)window.FindResource("DisconnectedDeviceTemplate");
                 }
             }
-        }
+        }*/
 
+        /*    public struct Settings
+            {
+                public float Frequency { get; set; }
+                public int Period { get; set; }
 
+                public string StudyCenter { get; set; }
+                public string StudyCode { get; set; }
 
-        public class MyBackgroundWorker : BackgroundWorker
-        {
+                public override string ToString()
+                {
+                    return Frequency + " " + Period + " " + StudyCenter + " " + StudyCode;
+                }
+            }
+            */
 
-        }
     }
 
     public class EnabledStepConverter : IValueConverter

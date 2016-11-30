@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using static IoTDataReceiver.Service;
-using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
@@ -24,7 +22,6 @@ namespace IoTDataReceiver
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             listBoxDevices.ItemsSource = dataReceiver.GetAvailableDevices();
-            //       listBoxDevices.ItemTemplateSelector = new DeviceTemplateSelector();
 
             BindingOperations.SetBinding(btnGet, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
@@ -58,7 +55,6 @@ namespace IoTDataReceiver
 
             BindingOperations.SetBinding(btnClear, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
             {
-                //           Source = this.dataReceiver,
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
@@ -94,7 +90,7 @@ namespace IoTDataReceiver
 
             Guid deviceId = ((IDeviceData)listBoxDevices.SelectedItem).DeviceId;
 
-            BackgroundWorker worker = new MyBackgroundWorker();
+            BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerGet_DoWork;
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerGet_RunWorkerCompleted;
@@ -110,27 +106,20 @@ namespace IoTDataReceiver
         {
             Guid deviceId = (Guid)e.Argument;
 
-            //          dataReceiver.ProgressUpdate += Notify;
-            //         this.worker = (BackgroundWorker)sender;
-
             try
             {
                 dataReceiver.GetData(deviceId);
             }
             catch (MyExceptions.NoDataException ex)
             {
-                //              this.worker.ReportProgress(0);
                 MessageBox.Show("This smart watch does not contain any data.\n" + ex.Message);
             }
             catch (MyExceptions.CommunicationException ex)
             {
-                //            this.worker.ReportProgress(0);
                 MessageBox.Show("Error reading data.\n" + ex.Message);
             }
             finally
             {
-                //             dataReceiver.ProgressUpdate -= Notify;
-                //              this.worker = null;
             }
             Debug.Write("DONE");
 
@@ -147,10 +136,6 @@ namespace IoTDataReceiver
 
         void workerGet_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            /*     if (e.Cancelled)
-                     label.Content = label.Content + " - Cancelled";
-                 else
-                     label.Content = label.Content + " - Done";*/
             Debug.Write("DONEE");
         }
 
@@ -177,14 +162,9 @@ namespace IoTDataReceiver
         {
             Guid deviceId = (Guid)e.Argument;
 
-            //          dataReceiver.ProgressUpdate += Notify;
-            //      this.worker = (BackgroundWorker)sender;
-
             dataReceiver.ProcessData(deviceId);
             Debug.Write("DONE");
 
-            //       dataReceiver.ProgressUpdate -= Notify;
-            //      this.worker = null;
         }
 
         void workerProcess_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -215,33 +195,25 @@ namespace IoTDataReceiver
         {
             Guid deviceId = (Guid)e.Argument;
 
-            //       dataReceiver.ProgressUpdate += Notify;
-            //       this.worker = (BackgroundWorker)sender;
-
             try
             {
                 dataReceiver.SendData(deviceId);
             }
             catch (MyExceptions.UnauthorizedException ex)
             {
-                //          this.worker.ReportProgress(0);
-
                 MessageBox.Show("Wrong password for the patient, cannot log in.\n" + ex.Message);
             }
             catch (MyExceptions.CommunicationException ex)
             {
-                //          this.worker.ReportProgress(0);
                 MessageBox.Show("Error communication with server.\n" + ex.Message);
             }
             catch (MyExceptions.UnknownPatientException ex)
             {
-                //this.worker.ReportProgress(0);
                 MessageBox.Show("Unknown patient, cannot find information.\n" + ex.Message);
             }
             finally
             {
-                //         dataReceiver.ProgressUpdate -= Notify;
-                //           this.worker = null;
+
             }
 
             Debug.Write("DONE");
@@ -291,34 +263,25 @@ namespace IoTDataReceiver
             Guid deviceId = (Guid)args[0];
             string username = (string)args[1];
 
-            //   dataReceiver.ProgressUpdate += Notify;
-            //      this.worker = (BackgroundWorker)sender;
-
             try
             {
-                dataReceiver.PrepareDevice(deviceId, username, SettingsService.Instance.Settings);
+                dataReceiver.PrepareDevice(deviceId, username);
             }
             catch (MyExceptions.DeviceException ex)
             {
-                //this.worker.ReportProgress(0);
                 MessageBox.Show("Error setting up the device.\n" + ex.Message);
             }
             finally
             {
-                //             dataReceiver.ProgressUpdate -= Notify;
-                //               this.worker = null;
             }
 
-
             Debug.Write("DONE");
-
         }
 
         void workerClear_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Debug.Write("DONEE");
         }
-
 
     }
 }
