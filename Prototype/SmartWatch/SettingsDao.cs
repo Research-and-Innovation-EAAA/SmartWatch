@@ -54,7 +54,7 @@ namespace IoTDataReceiver
 
             set
             {
-                this.settings = new Dictionary<string, string>(settings);
+                this.settings = new Dictionary<string, string>(value);
                 Properties.Settings.Default.frequency = this.settings["frequency"];
                 Properties.Settings.Default.period = this.settings["period"];
                 Properties.Settings.Default.studyCenter = this.settings["studyCenter"];
