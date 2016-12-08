@@ -12,8 +12,8 @@ namespace IoTDataReceiver
 {
     public class Service : IService, INotifyPropertyChanged
     {
-        PatientService patientsService;
-        SettingsService settingsService;
+        IPatientService patientsService;
+        ISettingsService settingsService;
         IDeviceConnector dataConnector;
         IDatabaseConnector databaseConnector;
         IProcessAlgorithm algorithm;
@@ -53,45 +53,6 @@ namespace IoTDataReceiver
             this.dataConnector.GetConnectedDevices().CollectionChanged += ConnectedDevicesChangeHandler;
         }
 
-        private void RunOnMain(Action function)
-        {
-            Application.Current.Dispatcher.Invoke(function);
-        }
-
-        private void ConnectedDevicesChangeHandler(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                foreach (var v in e.NewItems)
-                {
-                    DeviceInformation newDevice = (DeviceInformation)v;
-                    var rec = new DeviceData(newDevice);
-                    rec.Connected = true;
-                    RunOnMain(() => availableDevices.Add(rec));
-                }
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                foreach (var v in e.OldItems)
-                {
-                    DeviceInformation oldDevice = (DeviceInformation)v;
-                    RunOnMain(() =>
-                    {
-                        IDeviceData deviceData = this.FindDevice(oldDevice.DeviceId);
-
-                        // if ready for another patient or data processed, remove from list... 
-                        if (deviceData.CurrentStep == DataProcessStep.DeviceCleared
-                            || deviceData.CurrentStep == DataProcessStep.DataUploaded)
-                        {
-                            availableDevices.Remove(deviceData);
-                        }
-                        // otherwise, only mark as disconnected, so it is possible to still process and send the data
-                        deviceData.Connected = false;
-                    });
-                }
-            }
-        }
-
         private ObservableCollection<IDeviceData> availableDevices = null;
         public ObservableCollection<IDeviceData> GetAvailableDevices()
         {
@@ -121,8 +82,7 @@ namespace IoTDataReceiver
                 Directory.Delete(PATH + device.DeviceId, true);
             }
 
-            // Create the directory
-            Directory.CreateDirectory(PATH + device.DeviceId + @"\temp");
+            Directory.CreateDirectory(PATH + device.DeviceId + @"\temp"); // Create the directory
 
             dataConnector.ProgressUpdate += device.Notify;
             try
@@ -182,19 +142,6 @@ namespace IoTDataReceiver
             OnPropertyChanged("CurrentStep");
         }
 
-        private static string zipFile(string path)
-        {
-            string tempFolderPath = path + @"\temp";
-            string zipFilePath = path + @"\data.zip";
-            if (!Directory.Exists(tempFolderPath))
-            {
-                throw new Exception("Cannot read the loaded file in temporary folder!");
-            }
-            ZipFile.CreateFromDirectory(tempFolderPath, zipFilePath);
-
-            return zipFilePath;
-        }
-
         public void SendData(Guid deviceId)
         {
             DeviceData device = FindDevice(deviceId);
@@ -241,7 +188,6 @@ namespace IoTDataReceiver
         {
             DeviceData device = FindDevice(deviceId);
             if (device == null) return;
-            //if (device.currentStep != DataProcessStep.DataUploaded) return;
             if (!device.Connected) return;
 
             device.Notify(-1, deviceId);
@@ -260,6 +206,58 @@ namespace IoTDataReceiver
 
             device.CurrentStep = DataProcessStep.DeviceCleared;
             OnPropertyChanged("CurrentStep");
+        }
+
+        private void RunOnMain(Action function)
+        {
+            Application.Current.Dispatcher.Invoke(function);
+        }
+
+        private static string zipFile(string path)
+        {
+            string tempFolderPath = path + @"\temp";
+            string zipFilePath = path + @"\data.zip";
+            if (!Directory.Exists(tempFolderPath))
+            {
+                throw new Exception("Cannot read the loaded file in temporary folder!");
+            }
+            ZipFile.CreateFromDirectory(tempFolderPath, zipFilePath);
+
+            return zipFilePath;
+        }
+
+        private void ConnectedDevicesChangeHandler(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (var v in e.NewItems)
+                {
+                    DeviceInformation newDevice = (DeviceInformation)v;
+                    var rec = new DeviceData(newDevice);
+                    rec.Connected = true;
+                    RunOnMain(() => availableDevices.Add(rec));
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (var v in e.OldItems)
+                {
+                    DeviceInformation oldDevice = (DeviceInformation)v;
+                    RunOnMain(() =>
+                    {
+                        IDeviceData deviceData = this.FindDevice(oldDevice.DeviceId);
+
+                        // if ready for another patient or data processed, remove from list... 
+                        if (deviceData.CurrentStep == DataProcessStep.DeviceCleared
+                            || deviceData.CurrentStep == DataProcessStep.DataUploaded)
+                        {
+                            availableDevices.Remove(deviceData);
+                        }
+                        // otherwise, only mark as disconnected, so it is possible to still process and send the data
+                        deviceData.Connected = false;
+                    });
+                }
+            }
         }
 
         #region INotifyPropertyChanged

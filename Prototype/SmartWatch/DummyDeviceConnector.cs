@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
@@ -32,32 +29,32 @@ namespace IoTDataReceiver
             Task.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(5));
-                DeviceInformation pepik = new DeviceInformation
+                DeviceInformation signe = new DeviceInformation
                 {
                     DeviceId = Guid.NewGuid(),
-                    PatientName = "Pepik"
+                    PatientName = "Signe"
                 };
-                devices.Add(pepik);
+                devices.Add(signe);
 
                 devices.Add(new DeviceInformation
                 {
                     DeviceId = Guid.NewGuid(),
-                    PatientName = "Mylan"
+                    PatientName = "John"
                 });
 
-                await Task.Run(async () =>
+                await Task.Run(async () => // simulating insertion after 5 sec
                  {
                      await Task.Delay(TimeSpan.FromSeconds(5));
                      devices.Add(new DeviceInformation
                      {
                          DeviceId = Guid.NewGuid(),
-                         PatientName = "Monika"
+                         PatientName = "Simon"
                      });
                  });
-                await Task.Run(async () =>
+                await Task.Run(async () => // simulating disconnecting after 20 sec
                 {
                     await Task.Delay(TimeSpan.FromSeconds(20));
-                    devices.Remove(pepik);
+                    devices.Remove(signe);
                 });
             });
         }
@@ -78,8 +75,6 @@ namespace IoTDataReceiver
 
 
         private ObservableCollection<DeviceInformation> devices = null;
-
-
         public ObservableCollection<DeviceInformation> GetConnectedDevices() { return devices; }
 
         private DeviceInformation FindDeviceListItem(Guid id)

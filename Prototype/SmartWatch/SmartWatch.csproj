@@ -86,6 +86,8 @@
     </ApplicationDefinition>
     <Compile Include="DataProcessStep.cs" />
     <Compile Include="IDatabaseConnector.cs" />
+    <Compile Include="ISettingsService.cs" />
+    <Compile Include="IPatientService.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="DummyDeviceConnector.cs" />
     <Compile Include="GeneActivDeviceConnector.cs" />

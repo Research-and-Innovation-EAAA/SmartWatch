@@ -2,7 +2,7 @@
 
 namespace IoTDataReceiver
 {
-    class SettingsService
+    class SettingsService : ISettingsService
     {
         private static SettingsService instance = null;
 

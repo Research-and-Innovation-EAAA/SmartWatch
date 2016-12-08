@@ -1,6 +1,8 @@
 ﻿namespace IoTDataReceiver
 {
     /*
+     * observer was replaced by delegates
+     * 
     interface IProgressObserver
     {
         /// <summary>

@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace IoTDataReceiver
 {
-    class PatientService
+    class PatientService : IPatientService
     {
         private IPatientDao patientDao = null;
 

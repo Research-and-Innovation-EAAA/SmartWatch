@@ -22,6 +22,7 @@ namespace IoTDataReceiver
         #endregion
 
         private RestClient client = new RestClient("http://192.168.56.101:3000/api/v1");
+
         public LoginToken Login(string username, string password)
         {
             // prepare the request

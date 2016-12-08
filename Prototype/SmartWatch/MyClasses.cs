@@ -9,26 +9,9 @@ namespace IoTDataReceiver
 
         public delegate void DeviceProgressUpdateHandler(int percent, Guid deviceId);
 
-      /*  public class DeviceTemplateSelector : DataTemplateSelector
-        {
-            public override DataTemplate SelectTemplate(object item, DependencyObject container)
-            {
-                DeviceData device = ((DeviceData)item);
-
-                Window window = Application.Current.MainWindow;
-
-                if (device.Connected)
-                {
-                    return (DataTemplate)window.FindResource("ConnectedDeviceTemplate");
-                }
-                else
-                {
-                    return (DataTemplate)window.FindResource("DisconnectedDeviceTemplate");
-                }
-            }
-        }*/
-
-        /*    public struct Settings
+        /*  struct Settins was replaced by generic Dictionary<string, string>
+         *  
+         *    public struct Settings
             {
                 public float Frequency { get; set; }
                 public int Period { get; set; }
@@ -41,8 +24,7 @@ namespace IoTDataReceiver
                     return Frequency + " " + Period + " " + StudyCenter + " " + StudyCode;
                 }
             }
-            */
-
+          */
     }
 
     public class EnabledStepConverter : IValueConverter

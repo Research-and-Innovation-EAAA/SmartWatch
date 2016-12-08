@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Windows.Threading;
 using static IoTDataReceiver.MyClasses;
@@ -33,7 +32,7 @@ namespace IoTDataReceiver
             Logger.AddLogger(new DebugLogger());
 
             // Default csv export info string (see download/stream to file)
-            GeneaCsvFileIO.DefaultApplicationInfo = "IoTDataReceiver";
+            GeneaCsvFileIO.DefaultApplicationInfo = "SmartWatch";
 
             devices = new ObservableCollection<DeviceInformation>();
 
@@ -50,41 +49,22 @@ namespace IoTDataReceiver
         {
             IGeneaDevice device = smartWatches[deviceId];
 
-            // Determine whether the directory exists
-            if (Directory.Exists(path))
-            {
-                System.IO.DirectoryInfo di = new DirectoryInfo(path);
-
-                foreach (FileInfo file in di.GetFiles())
-                {
-                    file.Delete();
-                }
-                foreach (DirectoryInfo dir in di.GetDirectories())
-                {
-                    dir.Delete(true);
-                }
-
-            }
-
-            Directory.CreateDirectory(path + @"\temp");
-
             GeneaDateTime startTime = null;
             try
-            {
-                startTime = device.ReadData(1, 1)[0].DataHeader.PageTime;
+            {      // read the time of the very first record
+                startTime = device.ReadData(1, 1)[0].DataHeader.PageTime; 
             }
             catch (ArgumentException)
             {
                 throw new MyExceptions.NoDataException();
             }
 
-            string startTimeUtc = startTime.ToDateTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffK", DateTimeFormatInfo.InvariantInfo);
             string fileName = path + @"\temp\" + device.SubjectInfo.SubjectCode + "_" + startTime.ToDateTime().ToString("yyyyMMddHHmmss") + ".csv";
 
             using (var filer = new GeneaDeviceFiler(device, fileName))
             {
                 filer.ExtractOperatorID = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                filer.ExtractNotes = "Downloaded by IoTDataReceiver";
+                filer.ExtractNotes = "Downloaded using SmartWatch";
 
                 filer.WriteDataProgress += this.OnExtractProgress;
                 filer.CreateFile();

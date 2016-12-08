@@ -145,7 +145,7 @@ namespace Prototype
             private Service()
             {
                 watches.Add(new Watch { Name = "Jakub", Data = 16345, Result = "Jakub sov godt." });
-                //watches.Add(new Watch { Name = "Lisa", Data = 22843, Result = "Lisa sov dejligt." });
+                watches.Add(new Watch { Name = "Lisa", Data = 22843, Result = "Lisa sov dejligt." });
                 watches.Add(new Watch { Name = "Søren", Data = 33400, Result = "Søren sov længe." });
                 //   watches.Add(new Watch { Name = "Monica", Data = 25400, Result = "Monica sov ikke." });
                 watches.Add(new Watch { Name = "Simon", Data = 0, Result = "No data." });
