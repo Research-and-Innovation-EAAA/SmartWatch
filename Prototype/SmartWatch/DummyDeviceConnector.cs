@@ -27,19 +27,19 @@ namespace IoTDataReceiver
 
         private DummyDeviceConnector()
         {
-            devices = new ObservableCollection<ListViewDeviceItem>();
+            devices = new ObservableCollection<DeviceInformation>();
 
             Task.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(5));
-                ListViewDeviceItem pepik = new ListViewDeviceItem
+                DeviceInformation pepik = new DeviceInformation
                 {
                     DeviceId = Guid.NewGuid(),
                     PatientName = "Pepik"
                 };
                 devices.Add(pepik);
 
-                devices.Add(new ListViewDeviceItem
+                devices.Add(new DeviceInformation
                 {
                     DeviceId = Guid.NewGuid(),
                     PatientName = "Mylan"
@@ -48,7 +48,7 @@ namespace IoTDataReceiver
                 await Task.Run(async () =>
                  {
                      await Task.Delay(TimeSpan.FromSeconds(5));
-                     devices.Add(new ListViewDeviceItem
+                     devices.Add(new DeviceInformation
                      {
                          DeviceId = Guid.NewGuid(),
                          PatientName = "Monika"
@@ -77,12 +77,12 @@ namespace IoTDataReceiver
         }
 
 
-        private ObservableCollection<ListViewDeviceItem> devices = null;
+        private ObservableCollection<DeviceInformation> devices = null;
 
 
-        public ObservableCollection<ListViewDeviceItem> GetConnectedDevices() { return devices; }
+        public ObservableCollection<DeviceInformation> GetConnectedDevices() { return devices; }
 
-        private ListViewDeviceItem FindDeviceListItem(Guid id)
+        private DeviceInformation FindDeviceListItem(Guid id)
         {
             return devices.FirstOrDefault(d => d.DeviceId == id);
         }

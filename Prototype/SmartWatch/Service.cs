@@ -45,15 +45,15 @@ namespace IoTDataReceiver
             this.availableDevices = new ObservableCollection<IDeviceData>();
             foreach (var v in dataConnector.GetConnectedDevices())
             {
-                ListViewDeviceItem device = (ListViewDeviceItem)v;
-                var rec = new DeviceData(device.DeviceId, device);
+                DeviceInformation device = (DeviceInformation)v;
+                var rec = new DeviceData(device);
                 rec.Connected = true;
-                runOnMain(() => availableDevices.Add(rec));
+                RunOnMain(() => availableDevices.Add(rec));
             }
             this.dataConnector.GetConnectedDevices().CollectionChanged += ConnectedDevicesChangeHandler;
         }
 
-        private void runOnMain(Action function)
+        private void RunOnMain(Action function)
         {
             Application.Current.Dispatcher.Invoke(function);
         }
@@ -64,18 +64,18 @@ namespace IoTDataReceiver
             {
                 foreach (var v in e.NewItems)
                 {
-                    ListViewDeviceItem newDevice = (ListViewDeviceItem)v;
-                    var rec = new DeviceData(newDevice.DeviceId, newDevice);
+                    DeviceInformation newDevice = (DeviceInformation)v;
+                    var rec = new DeviceData(newDevice);
                     rec.Connected = true;
-                    runOnMain(() => availableDevices.Add(rec));
+                    RunOnMain(() => availableDevices.Add(rec));
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 foreach (var v in e.OldItems)
                 {
-                    ListViewDeviceItem oldDevice = (ListViewDeviceItem)v;
-                    runOnMain(() =>
+                    DeviceInformation oldDevice = (DeviceInformation)v;
+                    RunOnMain(() =>
                     {
                         IDeviceData deviceData = this.FindDevice(oldDevice.DeviceId);
 
@@ -113,23 +113,15 @@ namespace IoTDataReceiver
             if (device.CurrentStep != DataProcessStep.DeviceInserted) return;
             if (!device.Connected) return;
 
-            // Determine whether the directory exists
+            device.CurrentStep = DataProcessStep.Processing;
+            OnPropertyChanged("CurrentStep");
+
             if (Directory.Exists(PATH + device.DeviceId))
-            {
-                DirectoryInfo di = new DirectoryInfo(PATH + device.DeviceId);
-
-                foreach (FileInfo file in di.GetFiles())
-                {
-                    file.Delete();
-                }
-                foreach (DirectoryInfo dir in di.GetDirectories())
-                {
-                    dir.Delete(true);
-                }
-
+            { // Delete if the directory already exists
+                Directory.Delete(PATH + device.DeviceId, true);
             }
 
-            // Try to create the directory
+            // Create the directory
             Directory.CreateDirectory(PATH + device.DeviceId + @"\temp");
 
             dataConnector.ProgressUpdate += device.Notify;
@@ -140,6 +132,8 @@ namespace IoTDataReceiver
             catch (Exception ex)
             {
                 device.Notify(0, deviceId);  // reset progress bar
+                device.CurrentStep = DataProcessStep.DeviceInserted;
+                OnPropertyChanged("CurrentStep");
                 throw ex;
             }
             finally
@@ -148,7 +142,6 @@ namespace IoTDataReceiver
             }
 
             string[] info = Path.GetFileNameWithoutExtension(device.PathCsv).Split('_');
-            device.Username = info[0];
             device.Date = info[1];
 
             device.CurrentStep = DataProcessStep.DataDownloaded;
@@ -162,8 +155,8 @@ namespace IoTDataReceiver
             if (device.CurrentStep != DataProcessStep.DataDownloaded) return;
 
             device.Notify(-1, deviceId);  // -1 is indeterminate
-
-            //            System.Threading.Thread.Sleep(5000);
+            device.CurrentStep = DataProcessStep.Processing;
+            OnPropertyChanged("CurrentStep");
 
             try
             {
@@ -174,6 +167,8 @@ namespace IoTDataReceiver
             catch (Exception ex)
             {
                 device.Notify(0, deviceId);  // reset progress bar
+                device.CurrentStep = DataProcessStep.DataDownloaded;
+                OnPropertyChanged("CurrentStep");
                 throw ex;
             }
             finally
@@ -207,6 +202,8 @@ namespace IoTDataReceiver
             if (device.CurrentStep != DataProcessStep.DataProcessed) return;
 
             device.Notify(-1, deviceId); // -1 is indeterminate
+            device.CurrentStep = DataProcessStep.Processing;
+            OnPropertyChanged("CurrentStep");
 
             string password;
             try
@@ -219,14 +216,18 @@ namespace IoTDataReceiver
                 databaseConnector.Logout(token);
 
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
                 device.Notify(0, deviceId); // reset progress bar
+                device.CurrentStep = DataProcessStep.DataProcessed;
+                OnPropertyChanged("CurrentStep");
                 throw new MyExceptions.UnknownPatientException();
             }
             catch (Exception ex)
             {
                 device.Notify(0, deviceId); // reset progress bar
+                device.CurrentStep = DataProcessStep.DataProcessed;
+                OnPropertyChanged("CurrentStep");
                 throw ex;
             }
 
@@ -244,9 +245,16 @@ namespace IoTDataReceiver
             if (!device.Connected) return;
 
             device.Notify(-1, deviceId);
+            device.CurrentStep = DataProcessStep.Processing;
+            OnPropertyChanged("CurrentStep");
 
             dataConnector.SetupDevice(deviceId, username, settingsService.Settings);
-            //TODO delete files
+
+            // Determine whether the directory exists
+            if (Directory.Exists(PATH + device.DeviceId))
+            {
+                Directory.Delete(PATH + device.DeviceId, true);
+            }
 
             device.Notify(100, deviceId); // to show we are done
 
@@ -272,17 +280,15 @@ namespace IoTDataReceiver
 
         public class DeviceData : IDeviceData, INotifyPropertyChanged
         {
-            public DeviceData(Guid deviceId, ListViewDeviceItem deviceInfo)
+            public DeviceData(DeviceInformation deviceInfo)
             {
-                this.deviceId = deviceId;
                 this.DeviceInfo = deviceInfo;
                 this.CurrentStep = DataProcessStep.DeviceInserted;
             }
 
-            private Guid deviceId;
             public Guid DeviceId
             {
-                get { return this.deviceId; }
+                get { return DeviceInfo.DeviceId; }
             }
 
             private DataProcessStep currentStep;
@@ -306,17 +312,21 @@ namespace IoTDataReceiver
                 set { this.connected = value; OnPropertyChanged("Connected"); }
             }
 
-            public ListViewDeviceItem DeviceInfo { get; }
+            public string Username
+            {
+                get { return DeviceInfo.PatientName; }
+            }
+
+            public DeviceInformation DeviceInfo { get; }
             public string PathCsv { get; set; }
             public string PathZip { get; set; }
             public string ViewData { get; set; }
-            public string Username { get; set; }
             public string Date { get; set; }
 
 
             public void Notify(int progress, Guid deviceId)
             {
-                if (!deviceId.Equals(this.deviceId))
+                if (!deviceId.Equals(this.DeviceId))
                     return;
                 this.Progress = progress;
             }

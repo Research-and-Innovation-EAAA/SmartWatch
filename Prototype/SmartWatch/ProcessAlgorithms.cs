@@ -191,7 +191,7 @@ namespace IoTDataReceiver
                 lineNumber++;
                 if (lineNumber < 101)
                     continue;
-                if (lineNumber % sectionLength != 1)
+                if ((lineNumber - 101) % sectionLength != sectionLength - 1)
                 {
                     try
                     {

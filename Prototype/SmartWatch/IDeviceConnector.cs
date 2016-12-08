@@ -18,7 +18,7 @@ namespace IoTDataReceiver
 
         void SetupDevice(Guid deviceId, string username, Dictionary<string, string> settings);
 
-        ObservableCollection<ListViewDeviceItem> GetConnectedDevices();
+        ObservableCollection<DeviceInformation> GetConnectedDevices();
 
         event DeviceProgressUpdateHandler ProgressUpdate;
     }

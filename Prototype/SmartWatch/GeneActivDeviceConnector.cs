@@ -35,7 +35,7 @@ namespace IoTDataReceiver
             // Default csv export info string (see download/stream to file)
             GeneaCsvFileIO.DefaultApplicationInfo = "IoTDataReceiver";
 
-            devices = new ObservableCollection<ListViewDeviceItem>();
+            devices = new ObservableCollection<DeviceInformation>();
 
             // Setup and start the Genea Manager
             manager.GeneaDeviceAdded += OnGeneaDeviceAdded;
@@ -73,7 +73,7 @@ namespace IoTDataReceiver
             {
                 startTime = device.ReadData(1, 1)[0].DataHeader.PageTime;
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 throw new MyExceptions.NoDataException();
             }
@@ -92,7 +92,7 @@ namespace IoTDataReceiver
                 {
                     filer.WriteStoredData();
                 }
-                catch (DeviceIOException ex)
+                catch (DeviceIOException)
                 {
                     throw new MyExceptions.CommunicationException();
                 }
@@ -116,8 +116,8 @@ namespace IoTDataReceiver
 
         private Dictionary<Guid, IGeneaDevice> smartWatches = new Dictionary<Guid, IGeneaDevice>();
 
-        private ObservableCollection<ListViewDeviceItem> devices = null;
-        public ObservableCollection<ListViewDeviceItem> GetConnectedDevices() { return devices; }
+        private ObservableCollection<DeviceInformation> devices = null;
+        public ObservableCollection<DeviceInformation> GetConnectedDevices() { return devices; }
 
         public event DeviceProgressUpdateHandler ProgressUpdate;
         protected virtual void OnProgressUpdate(int progress, Guid deviceId)
@@ -126,7 +126,7 @@ namespace IoTDataReceiver
             if (handler != null) handler(progress, deviceId);
         }
 
-        private ListViewDeviceItem FindDeviceListItem(Guid id)
+        private DeviceInformation FindDeviceListItem(Guid id)
         {
             return devices.FirstOrDefault(d => d.DeviceId == id);
         }
@@ -135,7 +135,7 @@ namespace IoTDataReceiver
         {
             IGeneaDevice device = e.GeneaDevice;
 
-            devices.Add(new ListViewDeviceItem
+            devices.Add(new DeviceInformation
             {
                 DeviceId = device.GeneaDeviceID,
                 DeviceNumber = device.DeviceIdentity.DeviceUniqueSerialCode,
@@ -154,12 +154,11 @@ namespace IoTDataReceiver
             Guid deviceId = e.GeneaDeviceID;
 
             smartWatches[deviceId].StatusUpdate -= OnLiveDeviceStatusUpdate;
-            //    device.DeviceSetupUpdate -= OnLiveDeviceSetupUpdate; // TODO možná zakomentovat
             smartWatches.Remove(deviceId);
 
             for (int i = 0; i < devices.Count; i++)
             {
-                ListViewDeviceItem item = devices[i];
+                DeviceInformation item = devices[i];
                 if (item.DeviceId == deviceId)
                 {
                     devices.Remove(item);
@@ -178,13 +177,13 @@ namespace IoTDataReceiver
 
         private void OnLiveDeviceStatusUpdate(object sender, GeneaStatusUpdateEventArgs e)
         {
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => LiveDeviceStatusUpdate(e.GeneaDeviceID, e.Status))); //TODO battery
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => LiveDeviceStatusUpdate(e.GeneaDeviceID, e.Status))); //TODO battery status
         }
 
         private void LiveDeviceStatusUpdate(Guid deviceID, GeneaStatus status)
         {
             Debug.Write("device" + deviceID + ", status " + status);
-            ListViewDeviceItem item = this.FindDeviceListItem(deviceID);
+            DeviceInformation item = this.FindDeviceListItem(deviceID);
             if (item != null) item.SetBatteryVoltage(status.BatteryVoltage);  // volts to level
         }
 

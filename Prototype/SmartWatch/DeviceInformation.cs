@@ -7,11 +7,9 @@ namespace IoTDataReceiver
 {
 
     /// <summary>
-    /// Container for list view item representing a device plus app-specific state/control
-    /// backing. Need INotifyPropertyChanged so we can update control from code-behind
-    /// Author: Activinsights Ltd., edited
+    /// Class for representing a device.
     /// </summary>
-    public class ListViewDeviceItem : INotifyPropertyChanged
+    public class DeviceInformation : INotifyPropertyChanged
     {
         /// <summary>
         /// Device Guid, generated everytime a device is connected
@@ -24,7 +22,7 @@ namespace IoTDataReceiver
         }
 
         /// <summary>
-        /// Device number - physical number of the device
+        /// Physical number on the device
         /// </summary>
         private string deviceNumber;
         public string DeviceNumber

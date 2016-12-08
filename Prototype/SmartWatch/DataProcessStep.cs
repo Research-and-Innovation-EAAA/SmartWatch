@@ -2,6 +2,7 @@
 {
     public enum DataProcessStep
     {
+        Processing = -1, // working with the watch
         DeviceInserted = 0,
         DataDownloaded = 1,
         DataProcessed = 2,

@@ -32,7 +32,8 @@ namespace IoTDataReceiver
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(this.Username)) {
+            if (string.IsNullOrWhiteSpace(this.Username))
+            {
                 MessageBox.Show("Please choose a patient.", "Patient missing");
                 return;
             }
@@ -40,7 +41,7 @@ namespace IoTDataReceiver
             MessageBoxResult result = MessageBox.Show("Do you really want to erase all the data from the smart watch?", "Erase?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
-                SettingsService.Instance.Settings = this.Settings; // TODO return erase, or cancel
+                SettingsService.Instance.Settings = this.Settings;
                 this.EraseAndSetup = true;
                 this.Close();
             }

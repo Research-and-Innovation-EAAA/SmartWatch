@@ -23,7 +23,7 @@ namespace IoTDataReceiver
         {
             listBoxDevices.ItemsSource = dataReceiver.GetAvailableDevices();
 
-            BindingOperations.SetBinding(btnGet, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
+            BindingOperations.SetBinding(btnGet, Button.IsEnabledProperty, new Binding()
             {
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
@@ -33,7 +33,7 @@ namespace IoTDataReceiver
                 ConverterParameter = DataProcessStep.DeviceInserted // <-- when to be enabled
             });
 
-            BindingOperations.SetBinding(btnProcess, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
+            BindingOperations.SetBinding(btnProcess, Button.IsEnabledProperty, new Binding() // cannot reuse the existing binding, needs to be set up again
             {
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
@@ -43,7 +43,7 @@ namespace IoTDataReceiver
                 ConverterParameter = DataProcessStep.DataDownloaded // <-- when to be enabled
             });
 
-            BindingOperations.SetBinding(btnUpload, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
+            BindingOperations.SetBinding(btnUpload, Button.IsEnabledProperty, new Binding()
             {
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
@@ -53,7 +53,7 @@ namespace IoTDataReceiver
                 ConverterParameter = DataProcessStep.DataProcessed // <-- when to be enabled
             });
 
-            BindingOperations.SetBinding(btnClear, Button.IsEnabledProperty, new Binding() //TODO reuse the binding
+            BindingOperations.SetBinding(btnClear, Button.IsEnabledProperty, new Binding()
             {
                 Path = new PropertyPath("CurrentStep"),
                 Mode = BindingMode.OneWay,
@@ -69,12 +69,6 @@ namespace IoTDataReceiver
         private void btnSet_Click(object sender, RoutedEventArgs e)
         {
             SetupWindow w = new SetupWindow();
-            w.ShowDialog();
-        }
-
-        private void btnShowData_Click(object sender, RoutedEventArgs e)
-        {
-            DataWindow w = new DataWindow();
             w.ShowDialog();
         }
 
@@ -96,7 +90,7 @@ namespace IoTDataReceiver
             worker.RunWorkerCompleted += workerGet_RunWorkerCompleted;
 
 
-            worker.WorkerSupportsCancellation = false; // TODO cancel???
+            worker.WorkerSupportsCancellation = false;
             worker.WorkerReportsProgress = false;
             worker.RunWorkerAsync(deviceId);
         }
@@ -152,7 +146,7 @@ namespace IoTDataReceiver
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerProcess_RunWorkerCompleted;
 
-            worker.WorkerSupportsCancellation = false; // TODO cancel???
+            worker.WorkerSupportsCancellation = false;
             worker.WorkerReportsProgress = false;
             worker.RunWorkerAsync(deviceId);
         }
@@ -185,7 +179,7 @@ namespace IoTDataReceiver
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerSend_RunWorkerCompleted;
 
-            worker.WorkerSupportsCancellation = false; // TODO cancel???
+            worker.WorkerSupportsCancellation = false;
             worker.WorkerReportsProgress = false;
             worker.RunWorkerAsync(deviceId);
         }
@@ -251,7 +245,7 @@ namespace IoTDataReceiver
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerCompleted += workerClear_RunWorkerCompleted;
 
-            worker.WorkerSupportsCancellation = false; // TODO cancel???
+            worker.WorkerSupportsCancellation = false;
             worker.WorkerReportsProgress = false;
             worker.RunWorkerAsync(args);
 
@@ -271,16 +265,11 @@ namespace IoTDataReceiver
             {
                 MessageBox.Show("Error setting up the device.\n" + ex.Message);
             }
-            finally
-            {
-            }
-
-            Debug.Write("DONE");
         }
 
         void workerClear_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Debug.Write("DONEE");
+            MessageBox.Show("Setting up watch done!");
         }
 
     }

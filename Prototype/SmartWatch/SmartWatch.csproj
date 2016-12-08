@@ -87,9 +87,6 @@
     <Compile Include="DataProcessStep.cs" />
     <Compile Include="IDatabaseConnector.cs" />
     <Compile Include="Service.cs" />
-    <Compile Include="DataWindow.xaml.cs">
-      <DependentUpon>DataWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DummyDeviceConnector.cs" />
     <Compile Include="GeneActivDeviceConnector.cs" />
     <Compile Include="HowRYouConnector.cs" />
@@ -102,7 +99,7 @@
     <Compile Include="MyExceptions.cs" />
     <Compile Include="PatientFileDao.cs" />
     <Compile Include="ProcessAlgorithms.cs" />
-    <Compile Include="ListViewDeviceItem.cs" />
+    <Compile Include="DeviceInformation.cs" />
     <Compile Include="MyClasses.cs" />
     <Compile Include="PatientService.cs" />
     <Compile Include="SettingsDao.cs" />
@@ -110,10 +107,6 @@
     <Compile Include="SetupWindow.xaml.cs">
       <DependentUpon>SetupWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="DataWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

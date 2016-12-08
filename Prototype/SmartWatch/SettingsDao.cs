@@ -29,12 +29,12 @@ namespace IoTDataReceiver
                 studyCenter = (string)Properties.Settings.Default["studyCenter"];
                 studyCode = (string)Properties.Settings.Default["studyCode"];
             }
-            catch (SettingsPropertyNotFoundException ex)
+            catch (SettingsPropertyNotFoundException)
             {
                 frequency = "75"; // Hz
                 period = "240"; //24 hours * 10 days = 240
-                studyCenter = "AUH-EAAA"; // TODO change to AUH
-                studyCode = "TEST"; // TODO change to GIGT
+                studyCenter = "AUH"; 
+                studyCode = "DRJIA"; 
             }
             this.settings = new Dictionary<string, string>();
             this.settings.Add("frequency", frequency);
