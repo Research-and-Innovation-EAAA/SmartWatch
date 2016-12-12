@@ -1,7 +1,4 @@
-﻿using GeneActiv.DeviceIOLibrary;
-using GeneActiv.DotNetLibrary;
-using GeneActiv.GeneaLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -12,7 +9,7 @@ using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
-    class GeneActivDeviceConnector : IDeviceConnector
+/*    class GeneActivDeviceConnector : IDeviceConnector
     {
         #region Singleton
         private static GeneActivDeviceConnector instance = null;
@@ -206,5 +203,5 @@ namespace IoTDataReceiver
                 throw new MyExceptions.DeviceException(ex.Message);
             }
         }
-    }
+    }*/
 }

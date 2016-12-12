@@ -1,7 +1,5 @@
-﻿using GeneActiv.GeneaLibrary;
-using System;
+﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 
 namespace IoTDataReceiver
 {
@@ -29,26 +27,6 @@ namespace IoTDataReceiver
         {
             get { return deviceNumber; }
             set { deviceNumber = value; OnPropertyChanged("DeviceNumber"); }
-        }
-
-        /// <summary>
-        /// Device battery level (%ge) from status updated
-        /// </summary>
-        private int _batteryLevel = 0;
-        public int BatteryLevel
-        {
-            get { Debug.Write("returning " +_batteryLevel + " %"); return _batteryLevel; }
-        }
-        
-        /// <summary>
-        /// Set current battery level based on raw battery voltage
-        /// </summary>
-        /// <param name="volts"></param>
-        public void SetBatteryVoltage(float volts)
-        {
-            Debug.Write("setting voltage to " + volts + " V");
-            _batteryLevel = GeneaUnitConvertor.CalculateBatteryLevel(volts);
-            OnPropertyChanged("BatteryLevel");
         }
 
         private string patientName;

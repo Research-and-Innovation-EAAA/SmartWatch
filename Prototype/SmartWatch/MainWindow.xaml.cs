@@ -82,8 +82,8 @@ namespace IoTDataReceiver
         {
             if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((IDeviceData)listBoxDevices.SelectedItem).DeviceId;
-
+            Guid deviceId = ((DeviceData)listBoxDevices.SelectedItem).DeviceId;
+            
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerGet_DoWork;
             worker.ProgressChanged += worker_ProgressChanged;
@@ -139,7 +139,7 @@ namespace IoTDataReceiver
         {
             if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((IDeviceData)listBoxDevices.SelectedItem).DeviceId;
+            Guid deviceId = ((DeviceData)listBoxDevices.SelectedItem).DeviceId;
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerProcess_DoWork;
@@ -172,7 +172,7 @@ namespace IoTDataReceiver
         {
             if (listBoxDevices.SelectedItem == null) return;
 
-            Guid deviceId = ((IDeviceData)listBoxDevices.SelectedItem).DeviceId;
+            Guid deviceId = ((DeviceData)listBoxDevices.SelectedItem).DeviceId;
 
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerSend_DoWork;
@@ -224,7 +224,7 @@ namespace IoTDataReceiver
         {
             if (listBoxDevices.SelectedItem == null) return;
 
-            IDeviceData device = (IDeviceData)listBoxDevices.SelectedItem;
+            DeviceData device = (DeviceData)listBoxDevices.SelectedItem;
             if (!device.Connected) return;
 
             Guid deviceId = device.DeviceId;
