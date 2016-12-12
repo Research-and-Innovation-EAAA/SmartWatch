@@ -38,7 +38,7 @@ namespace IoTDataReceiver
             this.patientsService = PatientService.Instance;
             this.settingsService = SettingsService.Instance;
 
-            this.dataConnector = DummyDeviceConnector.Instance;
+            this.dataConnector = GeneActivDeviceConnector.Instance;
             this.databaseConnector = HowRYouConnector.Instance;
             this.algorithm = new HundredAlgorithm(); // new SimpleAlgorithm();
 

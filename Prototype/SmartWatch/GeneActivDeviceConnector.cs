@@ -1,15 +1,16 @@
-﻿using System;
+﻿using GeneActiv.DeviceIOLibrary;
+using GeneActiv.DotNetLibrary;
+using GeneActiv.GeneaLibrary;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Threading;
 using static IoTDataReceiver.MyClasses;
 
 namespace IoTDataReceiver
 {
-/*    class GeneActivDeviceConnector : IDeviceConnector
+    class GeneActivDeviceConnector : IDeviceConnector
     {
         #region Singleton
         private static GeneActivDeviceConnector instance = null;
@@ -119,7 +120,6 @@ namespace IoTDataReceiver
                 PatientName = device.SubjectInfo.SubjectCode
             });
 
-            device.StatusUpdate += OnLiveDeviceStatusUpdate;
             smartWatches.Add(device.GeneaDeviceID, device);
 
             // Bee beep sound
@@ -130,7 +130,6 @@ namespace IoTDataReceiver
         {
             Guid deviceId = e.GeneaDeviceID;
 
-            smartWatches[deviceId].StatusUpdate -= OnLiveDeviceStatusUpdate;
             smartWatches.Remove(deviceId);
 
             for (int i = 0; i < devices.Count; i++)
@@ -150,18 +149,6 @@ namespace IoTDataReceiver
         private void OnGeneaManagerError(object sender, ErrorLogEventArgs e)
         {
             Logger.WriteErrorLogEvent(e);
-        }
-
-        private void OnLiveDeviceStatusUpdate(object sender, GeneaStatusUpdateEventArgs e)
-        {
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => LiveDeviceStatusUpdate(e.GeneaDeviceID, e.Status))); //TODO battery status
-        }
-
-        private void LiveDeviceStatusUpdate(Guid deviceID, GeneaStatus status)
-        {
-            Debug.Write("device" + deviceID + ", status " + status);
-            DeviceInformation item = this.FindDeviceListItem(deviceID);
-            if (item != null) item.SetBatteryVoltage(status.BatteryVoltage);  // volts to level
         }
 
         public void SetupDevice(Guid deviceId, string username, Dictionary<string, string> settings)
@@ -203,5 +190,5 @@ namespace IoTDataReceiver
                 throw new MyExceptions.DeviceException(ex.Message);
             }
         }
-    }*/
+    }
 }
