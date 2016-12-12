@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:l="clr-namespace:IoTDataReceiver"
         mc:Ignorable="d"
-        Title="Smart Watch" Height="534.432" Width="869.373" Loaded="Window_Loaded" Icon="icon.ico" ResizeMode="CanMinimize" Closed="Window_Closed">
+        Title="Smart Watch" Height="534.432" Width="869.373" Loaded="Window_Loaded" Icon="icon.ico" ResizeMode="CanMinimize" Closed="Window_Closed" Closing="Window_Closing">
     <Window.Resources>
         <l:IndeterminateProgressConverter x:Key="indeterminateConverter" />
 

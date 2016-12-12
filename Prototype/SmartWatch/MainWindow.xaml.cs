@@ -284,5 +284,14 @@ namespace IoTDataReceiver
         {
             Environment.Exit(0);
         }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            
+            if (MessageBox.Show("Do you want really to exit the app?", "Exit?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+            }
+        }
     }
 }
