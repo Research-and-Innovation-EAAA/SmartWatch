@@ -49,7 +49,7 @@ namespace IoTDataReceiver.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("AUH-EAAA")]
+        [global::System.Configuration.DefaultSettingValueAttribute("AUH")]
         public string studyCenter {
             get {
                 return ((string)(this["studyCenter"]));
@@ -61,7 +61,7 @@ namespace IoTDataReceiver.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TEST")]
+        [global::System.Configuration.DefaultSettingValueAttribute("DRJIA")]
         public string studyCode {
             get {
                 return ((string)(this["studyCode"]));

@@ -9,10 +9,10 @@
       <Value Profile="(Default)">240</Value>
     </Setting>
     <Setting Name="studyCenter" Type="System.String" Scope="User">
-      <Value Profile="(Default)">AUH-EAAA</Value>
+      <Value Profile="(Default)">AUH</Value>
     </Setting>
     <Setting Name="studyCode" Type="System.String" Scope="User">
-      <Value Profile="(Default)">TEST</Value>
+      <Value Profile="(Default)">DRJIA</Value>
     </Setting>
   </Settings>
 </SettingsFile>
