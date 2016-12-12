@@ -156,7 +156,14 @@ namespace IoTDataReceiver
         {
             Guid deviceId = (Guid)e.Argument;
 
-            dataReceiver.ProcessData(deviceId);
+            try
+            {
+                dataReceiver.ProcessData(deviceId);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error processing data.\n" + ex.Message);
+            }
             Debug.Write("DONE");
 
         }
@@ -205,9 +212,9 @@ namespace IoTDataReceiver
             {
                 MessageBox.Show("Unknown patient, cannot find information.\n" + ex.Message);
             }
-            finally
+            catch (Exception ex)
             {
-
+                MessageBox.Show("Error sending data.\n" + ex.Message);
             }
 
             Debug.Write("DONE");

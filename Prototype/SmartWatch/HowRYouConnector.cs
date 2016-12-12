@@ -18,7 +18,7 @@ namespace IoTDataReceiver
                 return instance;
             }
         }
-        private HowRYouConnector() { }
+        protected HowRYouConnector() { }
         #endregion
 
         private RestClient client = new RestClient("http://192.168.56.101:3000/api/v1");
@@ -66,7 +66,7 @@ namespace IoTDataReceiver
             Debug.WriteLine("API response: " + content);
         }
 
-        public void UploadFile(string filePath, LoginToken token)
+        public virtual void UploadFile(string filePath, LoginToken token)
         {
             // prepare the request
             var request = new RestRequest("smartwatch", Method.POST);

@@ -39,7 +39,7 @@ namespace IoTDataReceiver
             this.settingsService = SettingsService.Instance;
 
             this.dataConnector = GeneActivDeviceConnector.Instance;
-            this.databaseConnector = HowRYouConnector.Instance;
+            this.databaseConnector = HowRYouBirgitteConnector.Instance;
             this.algorithm = new HundredAlgorithm(); // new SimpleAlgorithm();
 
             this.availableDevices = new ObservableCollection<DeviceData>();
@@ -120,7 +120,8 @@ namespace IoTDataReceiver
 
             try
             {
-                device.PathZip = zipFile(PATH + device.DeviceId);
+                string zipName = Path.GetFileNameWithoutExtension(device.PathCsv) + ".zip";
+                device.PathZip = zipFile(PATH + device.DeviceId, zipName);
                 this.algorithm.ProgressUpdate += device.Notify;
                 device.ViewData = this.algorithm.ProcessDataFromFile(device.PathCsv, deviceId);
             }
@@ -213,10 +214,10 @@ namespace IoTDataReceiver
             Application.Current.Dispatcher.Invoke(function);
         }
 
-        private static string zipFile(string path)
+        private static string zipFile(string path, string targetfileName)
         {
             string tempFolderPath = path + @"\temp";
-            string zipFilePath = path + @"\data.zip";
+            string zipFilePath = path + @"\" + targetfileName;
             if (!Directory.Exists(tempFolderPath))
             {
                 throw new Exception("Cannot read the loaded file in temporary folder!");
@@ -284,7 +285,7 @@ namespace IoTDataReceiver
 
             public string PathCsv { get; set; }
             public string PathZip { get; set; }
-           
+
         }
     }
 }
