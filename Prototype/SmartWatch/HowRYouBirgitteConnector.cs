@@ -23,7 +23,7 @@ namespace IoTDataReceiver
         private HowRYouBirgitteConnector() { }
         #endregion
 
-        const string PATH = @"C:\TestDrive\";
+        const string PATH = @"U:\DATA\SmartWatch\";
 
         public override void UploadFile(string filePath, LoginToken token)
         {
