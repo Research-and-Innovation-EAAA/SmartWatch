@@ -183,7 +183,6 @@ namespace IoTDataReceiver
 
             try
             {
-                device.SetDeviceTime(GeneaDateTime.Now);
                 device.SetupDevice(deviceConfigInfo, deviceSubjectInfo, deviceTrialInfo, true);
             }
             catch (GeneaDeviceException ex)
