@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace IoTDataReceiver
@@ -25,7 +26,10 @@ namespace IoTDataReceiver
         }
         #endregion
 
-        private PatientFileDao() { }
+        private PatientFileDao()
+        {
+            LoadPatients();
+        }
 
         public List<string> GetPatients()
         {
@@ -45,18 +49,38 @@ namespace IoTDataReceiver
         {
             var reader = new StreamReader(File.OpenRead(PATH));
             this.patients = new Dictionary<string, string>();
+            int lineNr = 1;
 
             while (!reader.EndOfStream)
             {
-                var line = reader.ReadLine();
+                string line = "";
+                try
+                {
+                    line = reader.ReadLine();
 
-                // Match match = Regex.Match(line, @"^[^,]*");
-                var parts = line.Split(',');
+                    var parts = line.Split(',');
 
-                string username = parts[0];
-                string password = parts[1];
-                this.patients.Add(username, password);
+                    string username = parts[0].Trim();
+                    string password = parts[1].Trim();
+                    this.patients.Add(username, password);
+                }
+                catch (Exception e)
+                {
+                    var text = "";
+                    if (e is ArgumentException)
+                    {
+                        text = "Patient " + line + " is twice in the file. Please ensure that a username is there only once.";
+                    }
+                    else
+                    {
+                        text = "Check line " + lineNr + " in the file patients.csv: " + line;
+                    }
+                    throw new MyExceptions.InputException(text + "\n" + e.Message, e);
+                }
+                lineNr++;
             }
+
+            reader.Close();
         }
     }
 }

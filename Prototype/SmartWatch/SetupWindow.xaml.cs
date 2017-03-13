@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using static IoTDataReceiver.MyExceptions;
 
 namespace IoTDataReceiver
 {
@@ -18,6 +19,7 @@ namespace IoTDataReceiver
         public SetupWindow()
         {
             InitializeComponent();
+
             this.patientService = PatientService.Instance;
             this.settingsService = SettingsService.Instance;
 

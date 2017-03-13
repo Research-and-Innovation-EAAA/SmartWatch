@@ -55,19 +55,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GeneActiv.DeviceIOLibrary">
-      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DeviceIOLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\Downloads\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DeviceIOLibrary.dll</HintPath>
     </Reference>
     <Reference Include="GeneActiv.DotNetLibrary">
-      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DotNetLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\Downloads\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.DotNetLibrary.dll</HintPath>
     </Reference>
     <Reference Include="GeneActiv.GeneaLibrary">
-      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.GeneaLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\Downloads\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.GeneaLibrary.dll</HintPath>
     </Reference>
     <Reference Include="GeneActiv.WinUsbLibrary">
-      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.WinUsbLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\Downloads\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\GeneActiv.WinUsbLibrary.dll</HintPath>
     </Reference>
     <Reference Include="InTheHand.Net.Personal">
-      <HintPath>..\..\..\..\..\Desktop\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\InTheHand.Net.Personal.dll</HintPath>
+      <HintPath>..\..\..\..\..\Downloads\GeneaLibraryRelease-3.1\GeneaLibrary\bin\Release\InTheHand.Net.Personal.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>

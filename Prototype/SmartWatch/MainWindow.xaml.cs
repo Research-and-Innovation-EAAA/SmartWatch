@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using static IoTDataReceiver.MyExceptions;
 
 namespace IoTDataReceiver
 {
@@ -17,7 +17,17 @@ namespace IoTDataReceiver
         public MainWindow()
         {
             InitializeComponent();
-            this.dataReceiver = Service.Instance;
+            try
+            {
+                this.dataReceiver = Service.Instance;
+            }
+            catch (MyExceptions.InputException e)
+            {
+                MessageBox.Show("The file with patients' passwords is incorrectly formatted, and therefore cannot be read properly.\n\nThere must be one patient per line without spaces: username,password.\n\nTechnical info: " + e.Message, "Error in patients.csv", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                Environment.Exit(0);
+                return;
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
