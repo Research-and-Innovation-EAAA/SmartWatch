@@ -14,24 +14,32 @@ namespace IoTDataReceiver
     public partial class MainWindow : Window
     {
         private IService dataReceiver;
+
+        private Exception loadException = null;
+
         public MainWindow()
         {
             InitializeComponent();
+
             try
             {
                 this.dataReceiver = Service.Instance;
             }
-            catch (MyExceptions.InputException e)
+            catch (MyExceptions.InputException ex)
             {
-                MessageBox.Show("The file with patients' passwords is incorrectly formatted, and therefore cannot be read properly.\n\nThere must be one patient per line without spaces: username,password.\n\nTechnical info: " + e.Message, "Error in patients.csv", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                Environment.Exit(0);
-                return;
+                this.loadException = ex; // save for later, when the window is created
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (this.loadException != null)
+            {
+                MessageBox.Show(this, "The file with patients' passwords is incorrectly formatted, and therefore cannot be read properly.\n\nThere must be one patient per line without spaces: username,password.\n\nTechnical info: " + this.loadException.Message, "Error in patients.csv", MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(0);
+                return;
+            }
+
             listBoxDevices.ItemsSource = dataReceiver.GetAvailableDevices();
 
             BindingOperations.SetBinding(btnGet, Button.IsEnabledProperty, new Binding()
@@ -94,7 +102,7 @@ namespace IoTDataReceiver
             if (listBoxDevices.SelectedItem == null) return;
 
             Guid deviceId = ((DeviceData)listBoxDevices.SelectedItem).DeviceId;
-            
+
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += workerGet_DoWork;
             worker.ProgressChanged += worker_ProgressChanged;
@@ -297,7 +305,7 @@ namespace IoTDataReceiver
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            
+
             if (MessageBox.Show("Do you want really to exit the app?", "Exit?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
             {
                 e.Cancel = true;
